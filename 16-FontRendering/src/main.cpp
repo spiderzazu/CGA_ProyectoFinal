@@ -566,7 +566,11 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelFountain.setShader(&shaderMulLighting);
 
 	//Mayow
-	mayowModelAnimate.loadModel("../models/mayow/personaje2.fbx");
+	/*mayowModelAnimate.loadModel("../models/mayow/personaje2.fbx");
+	mayowModelAnimate.setShader(&shaderMulLighting);*/
+
+	//Mario
+	mayowModelAnimate.loadModel("../models/mario/marioAnimate.fbx");
 	mayowModelAnimate.setShader(&shaderMulLighting);
 
 	camera->setPosition(glm::vec3(0.0, 0.0, 10.0));
@@ -1297,12 +1301,12 @@ bool processInput(bool continueApplication) {
 	}
 	if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
 		modelMatrixMayow = glm::translate(modelMatrixMayow,
-				glm::vec3(0, 0, 0.02));
+				glm::vec3(0, 0, 0.1));
 		animationIndex = 0;
 	} else if (modelSelected
 			== 2&& glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
 		modelMatrixMayow = glm::translate(modelMatrixMayow,
-				glm::vec3(0, 0, -0.02));
+				glm::vec3(0, 0, -0.1));
 		animationIndex = 0;
 	}
 
@@ -1341,6 +1345,9 @@ void applicationLoop() {
 			glm::vec3(13.0f, 0.05f, -5.0f));
 	modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-90.0f),
 			glm::vec3(0, 1, 0));
+	//modelMatrixMayow = glm::scale(modelMatrixMayow,
+		//glm::vec3(0.5f, 0.5f, 0.5f));
+
 
 	modelMatrixFountain = glm::translate(modelMatrixFountain,
 			glm::vec3(5.0, 0.0, -40.0));
