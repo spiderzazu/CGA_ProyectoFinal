@@ -55,6 +55,7 @@
 // OpenAL include
 #include <AL/alut.h>
 
+
 #define ARRAY_SIZE_IN_ELEMENTS(a) (sizeof(a)/sizeof(a[0]))
 
 int screenWidth;
@@ -93,6 +94,7 @@ ShadowBox *shadowBox;
 
 // Models complex instances
 Model modelRock;
+Model modelEnemy;
 Model modelAircraft;
 Model modelHeliChasis;
 Model modelHeliHeli;
@@ -107,11 +109,16 @@ Model modelLamboRearRightWheel;
 Model modelLamp1;
 Model modelLamp2;
 Model modelLampPost2;
+
+//monedas
+Model modelMoneda;
+
 // Hierba
 Model modelGrass;
 // Fountain
 Model modelFountain;
 // Model animate instance
+// 
 // Mayow
 Model mayowModelAnimate;
 // Terrain model instance
@@ -135,12 +142,12 @@ GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
 GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
 GL_TEXTURE_CUBE_MAP_NEGATIVE_Z };
 
-std::string fileNames[6] = { "../Textures/mp_bloodvalley/blood-valley_ft.tga",
-		"../Textures/mp_bloodvalley/blood-valley_bk.tga",
-		"../Textures/mp_bloodvalley/blood-valley_up.tga",
-		"../Textures/mp_bloodvalley/blood-valley_dn.tga",
-		"../Textures/mp_bloodvalley/blood-valley_rt.tga",
-		"../Textures/mp_bloodvalley/blood-valley_lf.tga" };
+std::string fileNames[6] = { "../Textures/mp_bloodvalley/a_rt.tga",
+		"../Textures/mp_bloodvalley/a_lf.tga",
+		"../Textures/mp_bloodvalley/a_up.tga",
+		"../Textures/mp_bloodvalley/a_dn.tga",
+		"../Textures/mp_bloodvalley/a_ft.tga",
+		"../Textures/mp_bloodvalley/a_bk.tga" };
 
 bool exitApp = false;
 int lastMousePosX, offsetX = 0;
@@ -148,6 +155,7 @@ int lastMousePosY, offsetY = 0;
 
 // Model matrix definitions
 glm::mat4 matrixModelRock = glm::mat4(1.0);
+glm::mat4 modelMatrixEnemy = glm::mat4(1.0);
 glm::mat4 modelMatrixHeli = glm::mat4(1.0f);
 glm::mat4 modelMatrixLambo = glm::mat4(1.0);
 glm::mat4 modelMatrixAircraft = glm::mat4(1.0);
@@ -157,6 +165,8 @@ glm::mat4 modelMatrixFountain = glm::mat4(1.0f);
 int animationIndex = 1;
 int modelSelected = 2;
 bool enableCountSelected = true;
+
+int contador_txt=0;
 
 // Variables to animations keyframes
 bool saveFrame = false, availableSave = true;
@@ -171,6 +181,11 @@ float rotHelHelY = 0.0;
 int stateDoor = 0;
 float dorRotCount = 0.0;
 
+// Var animate enemy
+int stateEnemy = 0;
+float EnemySteep = 0.0;
+
+
 // Lamps positions
 std::vector<glm::vec3> lamp1Position = { glm::vec3(-7.03, 0, -19.14), glm::vec3(
 		24.41, 0, -34.57), glm::vec3(-10.15, 0, -54.10) };
@@ -178,6 +193,14 @@ std::vector<float> lamp1Orientation = { -17.0, -82.67, 23.70 };
 std::vector<glm::vec3> lamp2Position = { glm::vec3(-36.52, 0, -23.24),
 		glm::vec3(-52.73, 0, -3.90) };
 std::vector<float> lamp2Orientation = { 21.37 + 90, -65.0 + 90 };
+
+// monedas positions
+std::vector<glm::vec3> monedaPosition = { glm::vec3(0, 0, -19.14), glm::vec3(
+		0, 0, -34.57), glm::vec3(0, 0, -54.10) };
+//monedas render
+
+bool monedasRender[3] = { true,true,true };
+
 
 // Blending model unsorted
 std::map<std::string, glm::vec3> blendingUnsorted = { { "aircraft", glm::vec3(
@@ -511,8 +534,14 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	boxLightViewBox.init();
 	boxLightViewBox.setShader(&shaderViewDepth);
 
-	modelRock.loadModel("../models/rock/rock.obj");
+	//modelRock.loadModel("../models/rock/rock.obj");
+	//modelRock.loadModel("../models/tortuga/tortuga.obj");
+	modelRock.loadModel("../models/moneda/moneda.fbx");
 	modelRock.setShader(&shaderMulLighting);
+
+	//Enemy
+	modelEnemy.loadModel("../models/tortuga/tortuga1.fbx");
+	modelEnemy.setShader(&shaderMulLighting);
 
 	modelAircraft.loadModel("../models/Aircraft_obj/E 45 Aircraft_obj.obj");
 	modelAircraft.setShader(&shaderMulLighting);
@@ -556,6 +585,10 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelLamp2.setShader(&shaderMulLighting);
 	modelLampPost2.loadModel("../models/Street_Light/LampPost.obj");
 	modelLampPost2.setShader(&shaderMulLighting);
+
+	//moneda
+	modelMoneda.loadModel("../models/moneda/moneda.fbx");
+	modelMoneda.setShader(&shaderMulLighting);
 
 	//Grass
 	modelGrass.loadModel("../models/grass/grassModel.obj");
@@ -1134,9 +1167,12 @@ void destroy() {
 	modelLamboRearRightWheel.destroy();
 	modelLamboRightDor.destroy();
 	modelRock.destroy();
+	//Enemygo
+	modelEnemy.destroy();
 	modelLamp1.destroy();
 	modelLamp2.destroy();
 	modelLampPost2.destroy();
+	modelMoneda.destroy();
 	modelGrass.destroy();
 	modelFountain.destroy();
 
@@ -1331,6 +1367,9 @@ void applicationLoop() {
 
 	matrixModelRock = glm::translate(matrixModelRock,
 			glm::vec3(-3.0, 0.0, 2.0));
+
+	modelMatrixEnemy = glm::translate(modelMatrixEnemy,
+		glm::vec3(-4.0, 0.0, 2.0));
 
 	modelMatrixHeli = glm::translate(modelMatrixHeli,
 			glm::vec3(5.0, 10.0, -5.0));
@@ -1654,6 +1693,22 @@ void applicationLoop() {
 							+ "].quadratic", 0.02);
 		}
 
+
+
+		//posicion monedas
+		for (int i = 0; i < monedaPosition.size(); i++) {
+			glm::mat4 matrixAdjustmoneda = glm::mat4(1.0f);
+			matrixAdjustmoneda = glm::translate(matrixAdjustmoneda,
+				monedaPosition[i]);
+			//matrixAdjustmoneda = glm::scale(matrixAdjustmoneda,
+				//glm::vec3(0.5, 0.5, 0.5));
+			matrixAdjustmoneda = glm::translate(matrixAdjustmoneda,
+				glm::vec3(0, 10.3585, 0));
+			glm::vec3 monedaPosition = glm::vec3(matrixAdjustmoneda[3]);
+		}
+
+
+
 		/*******************************************
 		 * 1.- We render the depth buffer
 		 *******************************************/
@@ -1758,6 +1813,9 @@ void applicationLoop() {
 		addOrUpdateColliders(collidersSBB, "rock", rockCollider,
 				matrixModelRock);
 
+
+
+
 		// Lamps1 colliders
 		for (int i = 0; i < lamp1Position.size(); i++) {
 			AbstractModel::OBB lampCollider;
@@ -1803,6 +1861,30 @@ void applicationLoop() {
 					lampCollider;
 		}
 
+
+		//monedas collider
+		for (int i = 0; i < monedaPosition.size(); i++) {
+				AbstractModel::OBB monedaCollider;
+				glm::mat4 modelMatrixColliderMoneda = glm::mat4(1.0);
+				modelMatrixColliderMoneda = glm::translate(modelMatrixColliderMoneda,
+					monedaPosition[i]);
+				addOrUpdateColliders(collidersOBB, "moneda" + std::to_string(i),
+					monedaCollider, modelMatrixColliderMoneda);
+				// Set the orientation of collider before doing the scale
+				monedaCollider.u = glm::quat_cast(modelMatrixColliderMoneda);
+				//modelMatrixColliderMoneda = glm::scale(modelMatrixColliderMoneda,
+					//glm::vec3(0.5, 0.5, 0.5));
+				modelMatrixColliderMoneda = glm::translate(modelMatrixColliderMoneda,
+					modelMoneda.getObb().c);
+				monedaCollider.c = glm::vec3(modelMatrixColliderMoneda[3]);
+				monedaCollider.e = modelMoneda.getObb().e * glm::vec3(0.5, 0.5, 0.5);
+				std::get<0>(collidersOBB.find("moneda" + std::to_string(i))->second) =
+					monedaCollider;
+		}
+
+
+
+
 		// Collider de mayow
 		AbstractModel::OBB mayowCollider;
 		glm::mat4 modelmatrixColliderMayow = glm::mat4(modelMatrixMayow);
@@ -1811,17 +1893,57 @@ void applicationLoop() {
 		// Set the orientation of collider before doing the scale
 		mayowCollider.u = glm::quat_cast(modelmatrixColliderMayow);
 		modelmatrixColliderMayow = glm::scale(modelmatrixColliderMayow,
-				glm::vec3(0.021, 0.021, 0.021));
+				glm::vec3(0.4, 0.8, 0.8));
 		modelmatrixColliderMayow = glm::translate(modelmatrixColliderMayow,
-				glm::vec3(mayowModelAnimate.getObb().c.x,
-						mayowModelAnimate.getObb().c.y,
-						mayowModelAnimate.getObb().c.z));
+				glm::vec3(mayowModelAnimate.getObb().c.x-0.1,
+						mayowModelAnimate.getObb().c.y-0.1,
+						mayowModelAnimate.getObb().c.z+1));
 		mayowCollider.e = mayowModelAnimate.getObb().e
-				* glm::vec3(0.021, 0.021, 0.021)
+				* glm::vec3(0.4, 0.8, 0.8)
 				* glm::vec3(0.787401574, 0.787401574, 0.787401574);
 		mayowCollider.c = glm::vec3(modelmatrixColliderMayow[3]);
 		addOrUpdateColliders(collidersOBB, "mayow", mayowCollider,
 				modelMatrixMayow);
+
+
+		//Collider del enemigo/*
+
+		AbstractModel::SBB enemyCollider;
+		glm::mat4 modelMatrixColliderEnemy = glm::mat4(modelMatrixEnemy);
+		modelMatrixColliderEnemy = glm::scale(modelMatrixColliderEnemy,
+			glm::vec3(0.8, 0.8, 0.8));
+		modelMatrixColliderEnemy = glm::translate(modelMatrixColliderEnemy, glm::vec3(
+			modelEnemy.getSbb().c.x,
+			modelEnemy.getSbb().c.y,
+			modelEnemy.getSbb().c.z  + EnemySteep+0.6));
+		enemyCollider.c = glm::vec3(modelMatrixColliderEnemy[3]);
+		enemyCollider.ratio = modelEnemy.getSbb().ratio * 0.8;
+		addOrUpdateColliders(collidersSBB, "enemy", enemyCollider,
+			modelMatrixEnemy);
+
+
+
+		//Collider del enemigo
+		/*
+		AbstractModel::OBB enemyCollider;
+		glm::mat4 modelmatrixColliderEnemy = glm::mat4(modelMatrixEnemy);
+		modelmatrixColliderEnemy = glm::rotate(modelmatrixColliderEnemy,
+			glm::radians(-90.0f), glm::vec3(1, 0, 0));
+		// Set the orientation of collider before doing the scale
+		enemyCollider.u = glm::quat_cast(modelmatrixColliderEnemy);
+		modelmatrixColliderEnemy = glm::scale(modelmatrixColliderEnemy,
+			glm::vec3(0.4, 0.8, 0.8));
+		modelmatrixColliderEnemy = glm::translate(modelmatrixColliderEnemy,
+			glm::vec3(modelEnemy.getObb().c.x - 0.1,
+				modelEnemy.getObb().c.y - 0.1,
+				modelEnemy.getObb().c.z + 1));
+		enemyCollider.e = modelEnemy.getObb().e
+			* glm::vec3(0.4, 0.8, 0.8)
+			* glm::vec3(0.787401574, 0.787401574, 0.787401574);
+		enemyCollider.c = glm::vec3(modelmatrixColliderEnemy[3]);
+		addOrUpdateColliders(collidersOBB, "enemy", enemyCollider,
+			modelMatrixEnemy);*/
+
 
 		/*******************************************
 		 * Render de colliders
@@ -1953,8 +2075,17 @@ void applicationLoop() {
 				if (!colIt->second)
 					addOrUpdateColliders(collidersOBB, jt->first);
 				else {
-					if (jt->first.compare("mayow") == 0)
+					//if (jt->first.compare("mayow") == 0)
+					if (jt->first.find("mayow") != std::string::npos)
 						modelMatrixMayow = std::get<1>(jt->second);
+					std::cout << "000000000000000000000000000" << std::endl;
+					if (jt->first.find("moneda") != std::string::npos) {
+						std::string pos = jt->first.substr(6, 1);
+						std::cout << "Posicion" << pos << std::endl;
+						monedasRender[std::stoi(pos)] = false;	
+						contador_txt++;
+					}
+						
 				}
 			}
 		}
@@ -1972,14 +2103,20 @@ void applicationLoop() {
 		 *******************************************/
 
 		// State machine for the lambo car
+
 		switch (stateDoor) {
 		case 0:
-			dorRotCount += 0.5;
-			if (dorRotCount > 75)
+			dorRotCount += 0.1;
+			//std::cout << "Posicion " << dorRotCount << std::endl;
+			//std::cout << "Estado " << stateDoor << std::endl;
+			if (dorRotCount > 70) {
 				stateDoor = 1;
+			}
 			break;
 		case 1:
-			dorRotCount -= 0.5;
+			dorRotCount -= 0.1;
+			//std::cout << "Posicion " << dorRotCount << std::endl;
+			//std::cout << "Estado " << stateDoor << std::endl;
 			if (dorRotCount < 0) {
 				dorRotCount = 0.0;
 				stateDoor = 0;
@@ -1987,7 +2124,31 @@ void applicationLoop() {
 			break;
 		}
 
-		modelText->render("Texto en openGL", -1, 0);
+
+		switch (stateEnemy) {
+		case 0:
+			EnemySteep += 0.1;
+			std::cout << "Posicion " << EnemySteep << std::endl;
+			std::cout << "Estado " << stateEnemy << std::endl;
+			if (EnemySteep > 5) {
+				stateEnemy = 1;
+			}
+			break;
+		case 1:
+			EnemySteep -= 0.1;
+			std::cout << "Posicion " << EnemySteep << std::endl;
+			std::cout << "Estado " << stateEnemy << std::endl;
+			if (EnemySteep < 0) {
+				EnemySteep = 0.0;
+				stateEnemy = 0;
+			}
+			break;
+		}
+
+
+
+
+		modelText->render("Puntuacon " + std::to_string(contador_txt), -1, 0);
 		glfwSwapBuffers(window);
 
 		/****************************+
@@ -2041,6 +2202,8 @@ void prepareScene() {
 	skyboxSphere.setShader(&shaderSkybox);
 
 	modelRock.setShader(&shaderMulLighting);
+	//Enemigo
+	modelEnemy.setShader(&shaderMulLighting);
 
 	modelAircraft.setShader(&shaderMulLighting);
 
@@ -2063,11 +2226,16 @@ void prepareScene() {
 	modelLamp2.setShader(&shaderMulLighting);
 	modelLampPost2.setShader(&shaderMulLighting);
 
+	//monedas
+	modelMoneda.setShader(&shaderMulLighting);
+
 	//Grass
 	modelGrass.setShader(&shaderMulLighting);
 
 	//Mayow
 	mayowModelAnimate.setShader(&shaderMulLighting);
+
+	
 }
 
 void prepareDepthScene() {
@@ -2075,6 +2243,8 @@ void prepareDepthScene() {
 	skyboxSphere.setShader(&shaderDepth);
 
 	modelRock.setShader(&shaderDepth);
+	//enemy
+	modelEnemy.setShader(&shaderDepth);
 
 	modelAircraft.setShader(&shaderDepth);
 
@@ -2146,6 +2316,9 @@ void renderScene(bool renderParticles) {
 	// Forze to enable the unit texture to 0 always ----------------- IMPORTANT
 	glActiveTexture(GL_TEXTURE0);
 
+
+
+
 	// Render the lamps
 	for (int i = 0; i < lamp1Position.size(); i++) {
 		lamp1Position[i].y = terrain.getHeightTerrain(lamp1Position[i].x,
@@ -2168,6 +2341,25 @@ void renderScene(bool renderParticles) {
 		modelLampPost2.setOrientation(glm::vec3(0, lamp2Orientation[i], 0));
 		modelLampPost2.render();
 	}
+
+	//Render monedas
+	for (int i = 0; i < monedaPosition.size(); i++) {
+
+		//modelMoneda.setScale(glm::vec3(10, 10, 10));
+		//modelmoneda.setOrientation(glm::vec3(0, monedaOrientation[i], 0));
+		if (monedasRender[i]) {
+			monedaPosition[i].y = terrain.getHeightTerrain(monedaPosition[i].x,
+				monedaPosition[i].z);
+			modelMoneda.setPosition(monedaPosition[i]);
+			modelMoneda.render();
+		} else {
+			monedaPosition[i].y = -100;
+			modelMoneda.setPosition(monedaPosition[i]);
+		}
+
+			
+	}
+
 
 	// Grass
 	glDisable(GL_CULL_FACE);
@@ -2206,6 +2398,24 @@ void renderScene(bool renderParticles) {
 			glm::vec3(0.021, 0.021, 0.021));
 	mayowModelAnimate.setAnimationIndex(animationIndex);
 	mayowModelAnimate.render(modelMatrixMayowBody);
+
+
+	//Enemy render
+
+	modelMatrixEnemy[3][1] = terrain.getHeightTerrain(modelMatrixEnemy[3][0],
+		modelMatrixEnemy[3][2]);
+	glm::mat4 modelMatrixMEnemyBody = glm::mat4(modelMatrixEnemy);
+	modelMatrixMEnemyBody = glm::translate(modelMatrixMEnemyBody, glm::vec3(0, 0, EnemySteep));
+	//modelMatrixEnemy = modelMatrixMEnemyBody;
+	modelEnemy.render(modelMatrixMEnemyBody);
+	glActiveTexture(GL_TEXTURE0);
+
+
+
+
+
+
+
 
 	/**********
 	 * Update the position with alpha objects
@@ -2248,6 +2458,7 @@ void renderScene(bool renderParticles) {
 			modelAircraft.render(modelMatrixAircraftBlend);
 		} else if (it->second.first.compare("lambo") == 0) {
 			// Lambo car
+			//glDisable(GL_CULL_FACE); 
 			glm::mat4 modelMatrixLamboBlend = glm::mat4(modelMatrixLambo);
 			modelMatrixLamboBlend[3][1] = terrain.getHeightTerrain(
 					modelMatrixLamboBlend[3][0], modelMatrixLamboBlend[3][2]);
@@ -2270,6 +2481,7 @@ void renderScene(bool renderParticles) {
 			modelLamboRearLeftWheel.render(modelMatrixLamboBlend);
 			modelLamboRearRightWheel.render(modelMatrixLamboBlend);
 			// Se regresa el cull faces IMPORTANTE para las puertas
+			//glEnable(GL_CULL_FACE);
 		} else if (it->second.first.compare("heli") == 0) {
 			// Helicopter
 			glm::mat4 modelMatrixHeliChasis = glm::mat4(modelMatrixHeli);
@@ -2283,6 +2495,7 @@ void renderScene(bool renderParticles) {
 			modelMatrixHeliHeli = glm::translate(modelMatrixHeliHeli,
 					glm::vec3(0.0, 0.0, 0.249548));
 			modelHeliHeli.render(modelMatrixHeliHeli);
+
 		} else if (renderParticles
 				&& it->second.first.compare("fountain") == 0) {
 			/**********
