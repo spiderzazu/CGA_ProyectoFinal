@@ -198,8 +198,12 @@ std::vector<float> lamp2Orientation = { 21.37 + 90, -65.0 + 90 };
 std::vector<glm::vec3> monedaPosition = { glm::vec3(0, 0, -19.14), glm::vec3(
 		0, 0, -34.57), glm::vec3(0, 0, -54.10) };
 //monedas render
-
 bool monedasRender[3] = { true,true,true };
+
+// Enemy positions
+std::vector<glm::vec3> enemyPosition = { glm::vec3(0, 0, -18), glm::vec3(0,0,-33), glm::vec3(0,0,-53) };
+// Enemy renders
+bool enemyRender[3] = { true, true, true };
 
 
 // Blending model unsorted
@@ -1373,8 +1377,8 @@ void applicationLoop() {
 	matrixModelRock = glm::translate(matrixModelRock,
 			glm::vec3(-3.0, 0.0, 2.0));
 
-	modelMatrixEnemy = glm::translate(modelMatrixEnemy,
-		glm::vec3(-4.0, 0.0, 2.0));
+	/*modelMatrixEnemy = glm::translate(modelMatrixEnemy,
+		glm::vec3(-4.0, 0.0, 2.0));*/
 
 	modelMatrixHeli = glm::translate(modelMatrixHeli,
 			glm::vec3(5.0, 10.0, -5.0));
@@ -1712,6 +1716,14 @@ void applicationLoop() {
 			glm::vec3 monedaPosition = glm::vec3(matrixAdjustmoneda[3]);
 		}
 
+		//posicion enemigos
+		for (int i = 0; i < enemyPosition.size(); i++) {
+			glm::mat4 matrixAdjustEnemigo = glm::mat4(1.0f);
+			matrixAdjustEnemigo = glm::translate(matrixAdjustEnemigo, enemyPosition[i]);
+			matrixAdjustEnemigo = glm::translate(matrixAdjustEnemigo, glm::vec3(0, 0, 0));
+			glm::vec3 enemyPosition = glm::vec3(matrixAdjustEnemigo[3]);
+		}
+
 
 
 		/*******************************************
@@ -1887,8 +1899,30 @@ void applicationLoop() {
 					monedaCollider;
 		}
 
+		//enemy colliders
+		for (int i = 0; i < enemyPosition.size(); i++) {
+			AbstractModel::SBB enemyCollider;
+			glm::mat4 modelMatrixColliderEnemy = glm::mat4(1.0);
+			modelMatrixColliderEnemy = glm::translate(modelMatrixColliderEnemy, enemyPosition[i]);
+			addOrUpdateColliders(collidersSBB, "enemy" + std::to_string(i), enemyCollider, modelMatrixColliderEnemy);
+			modelMatrixColliderEnemy = glm::translate(modelMatrixColliderEnemy, glm::vec3(modelEnemy.getSbb().c.x, modelEnemy.getSbb().c.y, modelEnemy.getSbb().c.z + EnemySteep));
+			enemyCollider.c = glm::vec3(modelMatrixColliderEnemy[3]);
+			enemyCollider.ratio = modelEnemy.getSbb().ratio*0.5;
+			std::get<0>(collidersSBB.find("enemy" + std::to_string(i))->second) = enemyCollider;
+		}
 
-
+		//Collider del enemigo/*
+		//Single enemy
+		/*AbstractModel::SBB enemyCollider;
+		glm::mat4 modelMatrixColliderEnemy = glm::mat4(modelMatrixEnemy);
+		modelMatrixColliderEnemy = glm::translate(modelMatrixColliderEnemy, glm::vec3(
+			modelEnemy.getSbb().c.x,
+			modelEnemy.getSbb().c.y,
+			modelEnemy.getSbb().c.z + EnemySteep));
+		enemyCollider.c = glm::vec3(modelMatrixColliderEnemy[3]);
+		enemyCollider.ratio = modelEnemy.getSbb().ratio * 0.5;
+		addOrUpdateColliders(collidersSBB, "enemy", enemyCollider,
+			modelMatrixEnemy);*/
 
 		// Collider de mayow
 		AbstractModel::OBB mayowCollider;
@@ -1911,20 +1945,7 @@ void applicationLoop() {
 				modelMatrixMayow);
 
 
-		//Collider del enemigo/*
-
-		AbstractModel::SBB enemyCollider;
-		glm::mat4 modelMatrixColliderEnemy = glm::mat4(modelMatrixEnemy);
-		modelMatrixColliderEnemy = glm::scale(modelMatrixColliderEnemy,
-			glm::vec3(0.8, 0.8, 0.8));
-		modelMatrixColliderEnemy = glm::translate(modelMatrixColliderEnemy, glm::vec3(
-			modelEnemy.getSbb().c.x,
-			modelEnemy.getSbb().c.y,
-			modelEnemy.getSbb().c.z  + EnemySteep+0.6));
-		enemyCollider.c = glm::vec3(modelMatrixColliderEnemy[3]);
-		enemyCollider.ratio = modelEnemy.getSbb().ratio * 0.8;
-		addOrUpdateColliders(collidersSBB, "enemy", enemyCollider,
-			modelMatrixEnemy);
+		
 
 
 
@@ -2153,7 +2174,7 @@ void applicationLoop() {
 
 
 
-		modelText->render("Puntuacon " + std::to_string(contador_txt), -1, 0);
+		modelText->render("Puntuacion " + std::to_string(contador_txt), -1, 0);
 		glfwSwapBuffers(window);
 
 		/****************************+
@@ -2361,9 +2382,30 @@ void renderScene(bool renderParticles) {
 			monedaPosition[i].y = -100;
 			modelMoneda.setPosition(monedaPosition[i]);
 		}
-
-			
+		
 	}
+
+	//Render enemigos
+	for (int i = 0; i < enemyPosition.size(); i++) {
+		if (enemyRender[i]) {
+			enemyPosition[i].y = terrain.getHeightTerrain(enemyPosition[i].x, enemyPosition[i].z + EnemySteep);
+			modelEnemy.setPosition(glm::vec3(enemyPosition[i].x, enemyPosition[i].y, enemyPosition[i].z + EnemySteep));
+			modelEnemy.render();
+		}
+		else {
+			enemyPosition[i].y = -100;
+			modelEnemy.setPosition(enemyPosition[i]);
+		}
+	}
+
+	////Enemy render
+
+	//modelMatrixEnemy[3][1] = terrain.getHeightTerrain(modelMatrixEnemy[3][0],
+	//	modelMatrixEnemy[3][2]);
+	//glm::mat4 modelMatrixMEnemyBody = glm::mat4(modelMatrixEnemy);
+	//modelMatrixMEnemyBody = glm::translate(modelMatrixMEnemyBody, glm::vec3(0, 0, EnemySteep));
+	////modelMatrixEnemy = modelMatrixMEnemyBody;
+	//modelEnemy.render(modelMatrixMEnemyBody);
 
 
 	// Grass
@@ -2405,14 +2447,7 @@ void renderScene(bool renderParticles) {
 	mayowModelAnimate.render(modelMatrixMayowBody);
 
 
-	//Enemy render
 
-	modelMatrixEnemy[3][1] = terrain.getHeightTerrain(modelMatrixEnemy[3][0],
-		modelMatrixEnemy[3][2]);
-	glm::mat4 modelMatrixMEnemyBody = glm::mat4(modelMatrixEnemy);
-	modelMatrixMEnemyBody = glm::translate(modelMatrixMEnemyBody, glm::vec3(0, 0, EnemySteep));
-	//modelMatrixEnemy = modelMatrixMEnemyBody;
-	modelEnemy.render(modelMatrixMEnemyBody);
 	glActiveTexture(GL_TEXTURE0);
 
 
