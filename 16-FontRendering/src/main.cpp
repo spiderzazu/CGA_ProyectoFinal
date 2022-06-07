@@ -1093,10 +1093,9 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 	/*******************************************
-	 * OpenAL init
-	 *******************************************/
+		 * OpenAL init
+		 *******************************************/
 	alutInit(0, nullptr);
 	alListenerfv(AL_POSITION, listenerPos);
 	alListenerfv(AL_VELOCITY, listenerVel);
@@ -1105,7 +1104,8 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	if (alGetError() != AL_NO_ERROR) {
 		printf("- Error creating buffers !!\n");
 		exit(1);
-	} else {
+	}
+	else {
 		printf("init() - No errors yet.");
 	}
 	// Config source 0
@@ -1113,6 +1113,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	alGenBuffers(NUM_BUFFERS, buffer);
 	buffer[0] = alutCreateBufferFromFile("../sounds/fountain.wav");
 	buffer[1] = alutCreateBufferFromFile("../sounds/fire.wav");
+	buffer[2] = alutCreateBufferFromFile("../sounds/moneda.wav");
 	int errorAlut = alutGetError();
 	if (errorAlut != ALUT_ERROR_NO_ERROR) {
 		printf("- Error open files with alut %d !!\n", errorAlut);
@@ -1125,11 +1126,12 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	if (alGetError() != AL_NO_ERROR) {
 		printf("- Error creating sources !!\n");
 		exit(2);
-	} else {
+	}
+	else {
 		printf("init - no errors after alGenSources\n");
 	}
 	alSourcef(source[0], AL_PITCH, 1.0f);
-	alSourcef(source[0], AL_GAIN, 3.0f);
+	alSourcef(source[0], AL_GAIN, 1.0f);
 	alSourcefv(source[0], AL_POSITION, source0Pos);
 	alSourcefv(source[0], AL_VELOCITY, source0Vel);
 	alSourcei(source[0], AL_BUFFER, buffer[0]);
@@ -1137,19 +1139,19 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	alSourcef(source[0], AL_MAX_DISTANCE, 2000);
 
 	alSourcef(source[1], AL_PITCH, 1.0f);
-	alSourcef(source[1], AL_GAIN, 3.0f);
-	alSourcefv(source[1], AL_POSITION, source1Pos);
-	alSourcefv(source[1], AL_VELOCITY, source1Vel);
-	alSourcei(source[1], AL_BUFFER, buffer[1]);
+	alSourcef(source[1], AL_GAIN, 1.0f); //ganancia intencidad
+	alSourcefv(source[1], AL_POSITION, source1Pos); //pos
+	alSourcefv(source[1], AL_VELOCITY, source1Vel); //velocidad
+	alSourcei(source[1], AL_BUFFER, buffer[1]); //bufer
 	alSourcei(source[1], AL_LOOPING, AL_TRUE);
-	alSourcef(source[1], AL_MAX_DISTANCE, 2000);
+	alSourcef(source[1], AL_MAX_DISTANCE, 2000); //humbral
 
 	alSourcef(source[2], AL_PITCH, 1.0f);
-	alSourcef(source[2], AL_GAIN, 0.3f);
+	alSourcef(source[2], AL_GAIN, 3.0f);
 	alSourcefv(source[2], AL_POSITION, source2Pos);
 	alSourcefv(source[2], AL_VELOCITY, source2Vel);
 	alSourcei(source[2], AL_BUFFER, buffer[2]);
-	alSourcei(source[2], AL_LOOPING, AL_TRUE);
+	alSourcei(source[2], AL_LOOPING, AL_FALSE);
 	alSourcef(source[2], AL_MAX_DISTANCE, 500);
 
 	// Se inicializa el modelo de texeles.
@@ -2220,6 +2222,7 @@ void applicationLoop() {
 						std::cout << "Posicion" << pos << std::endl;
 						monedasRender[std::stoi(pos)] = false;	
 						contador_txt++;
+						sourcesPlay[2] = true;
 					}
 					
 					
@@ -2299,6 +2302,12 @@ void applicationLoop() {
 		source0Pos[1] = modelMatrixFountain[3].y;
 		source0Pos[2] = modelMatrixFountain[3].z;
 		alSourcefv(source[0], AL_POSITION, source0Pos);
+		for (int i = 0; i < estrellaPosition.size(); i++) {
+			source2Pos[0] = monedaPosition[i].x;
+			source2Pos[1] = monedaPosition[i].y;
+			source2Pos[2] = monedaPosition[i].z;
+			alSourcefv(source[2], AL_POSITION, source2Pos);
+		}
 
 		// Listener for the Thris person camera
 		listenerPos[0] = modelMatrixMayow[3].x;
