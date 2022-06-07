@@ -147,7 +147,7 @@ glm::mat4 modelMatrixEnemy = glm::mat4(1.0);
 glm::mat4 modelMatrixMario = glm::mat4(1.0f);
 glm::mat4 modelMatrixFountain = glm::mat4(1.0f);
 
-int animationIndex = 1;
+int animationIndex = 2;
 int modelSelected = 2;
 bool enableCountSelected = true;
 
@@ -542,7 +542,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelFountain.setShader(&shaderMulLighting);
 
 	//Mario
-	marioModelAnimate.loadModel("../models/mario/marioAnimate.fbx");
+	marioModelAnimate.loadModel("../models/mario/marioAnimate2.fbx");
 	marioModelAnimate.setShader(&shaderMulLighting);
 
 	camera->setPosition(glm::vec3(0.0, 0.0, 10.0));
@@ -1240,12 +1240,18 @@ bool processInput(bool continueApplication) {
 		if (fabs(axes[1]) > 0.2) {
 			modelMatrixMario = glm::translate(modelMatrixMario,
 					glm::vec3(0, 0, -axes[1] * 0.1));
-			animationIndex = 0;
+			if (!isJump)
+				animationIndex = 1;
+			else
+				animationIndex = 0;
 		}
 		if (fabs(axes[0]) > 0.2) {
 			modelMatrixMario = glm::rotate(modelMatrixMario,
 					glm::radians(-axes[0] * 0.5f), glm::vec3(0, 1, 0));
-			animationIndex = 0;
+			if (!isJump)
+				animationIndex = 1;
+			else
+				animationIndex = 0;
 		}
 
 		if (fabs(axes[3]) > 0.2) {
@@ -1266,6 +1272,7 @@ bool processInput(bool continueApplication) {
 			isJump = true;
 			startTimeJump = currTime;
 			tmv = 0;
+			animationIndex = 0;
 		}
 	}
 
@@ -1286,22 +1293,34 @@ bool processInput(bool continueApplication) {
 	if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
 		modelMatrixMario = glm::rotate(modelMatrixMario, glm::radians(1.0f),
 				glm::vec3(0, 1, 0));
-		animationIndex = 0;
+		if (!isJump)
+			animationIndex = 1;
+		else
+			animationIndex = 0;
 	} else if (modelSelected
 			== 2&& glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
 		modelMatrixMario = glm::rotate(modelMatrixMario, glm::radians(-1.0f),
 				glm::vec3(0, 1, 0));
-		animationIndex = 0;
+		if (!isJump)
+			animationIndex = 1;
+		else
+			animationIndex = 0;
 	}
 	if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
 		modelMatrixMario = glm::translate(modelMatrixMario,
 				glm::vec3(0, 0, 0.1));
-		animationIndex = 0;
+		if (!isJump)
+			animationIndex = 1;
+		else
+			animationIndex = 0;
 	} else if (modelSelected
 			== 2&& glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
 		modelMatrixMario = glm::translate(modelMatrixMario,
 				glm::vec3(0, 0, -0.1));
-		animationIndex = 0;
+		if (!isJump)
+			animationIndex = 1;
+		else
+			animationIndex = 0;
 	}
 
 	bool keySpaceStatus = glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS;
@@ -1311,6 +1330,12 @@ bool processInput(bool continueApplication) {
 		tmv = 0;
 		sourcesPlay[4] = true;
 	}
+
+	if (isJump) {
+		animationIndex = 0;
+	}
+
+
 
 	glfwPollEvents();
 	return continueApplication;
@@ -1445,11 +1470,14 @@ void applicationLoop() {
 		 * Propiedades de neblina
 		 *******************************************/
 		shaderMulLighting.setVectorFloat3("fogColor",
-				glm::value_ptr(glm::vec3(0.5, 0.5, 0.4)));
+			glm::value_ptr(glm::vec3(0.6, 0.6, 0.8)));
+		shaderMulLighting.setFloat("density", 0.03);
 		shaderTerrain.setVectorFloat3("fogColor",
-				glm::value_ptr(glm::vec3(0.5, 0.5, 0.4)));
+			glm::value_ptr(glm::vec3(0.6, 0.6, 0.8)));
+		shaderTerrain.setFloat("density", 0.03);
 		shaderSkybox.setVectorFloat3("fogColor",
-				glm::value_ptr(glm::vec3(0.5, 0.5, 0.4)));
+			glm::value_ptr(glm::vec3(0.6, 0.6, 0.8)));
+		shaderSkybox.setFloat("density", 0.03);
 
 		/*******************************************
 		 * Propiedades Luz direccional
@@ -1893,7 +1921,7 @@ void applicationLoop() {
 		 *******************************************/
 
 		// Constantes de animaciones
-		animationIndex = 1;
+		animationIndex = 2;
 
 		/*******************************************
 		 * State machines
@@ -1922,10 +1950,21 @@ void applicationLoop() {
 		}
 
 
+		if (contador_damage > 0) {
+			modelText->render("Puntuacion " + std::to_string(contador_txt), -1, 0.0, 24, 1.0, 1.0, 1.0);
+			damageText->render("Vida restante: " + std::to_string(contador_damage), -1, 0.8, 24, 1.0, 1.0, 1.0);
+		}
+		if (contador_damage <= 0) {
+			
+			damageText->render("Perdiste", 0.0, 0.0, 24, 1.0, 1.0, 1.0);
 
+		}
+		if (contador_txt >= 1) {
+			
+			
+			damageText->render("Ganaste", 0.0, 0.0, 24, 1.0, 1.0, 1.0);
+		}
 
-		modelText->render("Puntuacion " + std::to_string(contador_txt), -1, 0.0,24,1.0,1.0,1.0);
-		damageText->render("Vida restante: " + std::to_string(contador_damage), -1, 0.8,24,1.0,1.0,1.0);
 		glfwSwapBuffers(window);
 
 		/*
