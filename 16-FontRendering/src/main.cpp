@@ -1147,7 +1147,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	alSourcef(source[1], AL_MAX_DISTANCE, 2000); //humbral
 
 	alSourcef(source[2], AL_PITCH, 1.0f);
-	alSourcef(source[2], AL_GAIN, 3.0f);
+	alSourcef(source[2], AL_GAIN, 1.0f);
 	alSourcefv(source[2], AL_POSITION, source2Pos);
 	alSourcefv(source[2], AL_VELOCITY, source2Vel);
 	alSourcei(source[2], AL_BUFFER, buffer[2]);
@@ -2220,8 +2220,13 @@ void applicationLoop() {
 					if (jt->first.find("moneda") != std::string::npos) {
 						std::string pos = jt->first.substr(6, 1);
 						std::cout << "Posicion" << pos << std::endl;
+						int a = std::stoi(pos);
 						monedasRender[std::stoi(pos)] = false;	
 						contador_txt++;
+						source2Pos[0] = monedaPosition[a].x;
+						source2Pos[1] = monedaPosition[a].y;
+						source2Pos[2] = monedaPosition[a].z;
+						alSourcefv(source[2], AL_POSITION, source2Pos);
 						sourcesPlay[2] = true;
 					}
 					
@@ -2302,12 +2307,13 @@ void applicationLoop() {
 		source0Pos[1] = modelMatrixFountain[3].y;
 		source0Pos[2] = modelMatrixFountain[3].z;
 		alSourcefv(source[0], AL_POSITION, source0Pos);
-		for (int i = 0; i < estrellaPosition.size(); i++) {
+		/*for (int i = 0; i < estrellaPosition.size(); i++) {
 			source2Pos[0] = monedaPosition[i].x;
 			source2Pos[1] = monedaPosition[i].y;
 			source2Pos[2] = monedaPosition[i].z;
 			alSourcefv(source[2], AL_POSITION, source2Pos);
-		}
+		}*/
+
 
 		// Listener for the Thris person camera
 		listenerPos[0] = modelMatrixMayow[3].x;
