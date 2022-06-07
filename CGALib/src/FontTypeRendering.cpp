@@ -72,7 +72,7 @@ void FontTypeRendering::Initialize() {
 		return exit(-1);
 	}
 	// Se le indica a dicha cara el archivo ttf que se utilizar�.
-	if (FT_New_Face(ft_lib, "../Fonts/arial.ttf", 0, &face) != 0) {
+	if (FT_New_Face(ft_lib, "../Fonts/SuperMario256.ttf", 0, &face) != 0) {
 		std::cerr << "Unable to load fuente\n";
 		cleanup();
 		return exit(-1);
