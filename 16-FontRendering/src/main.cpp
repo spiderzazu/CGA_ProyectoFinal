@@ -136,6 +136,7 @@ GLuint skyboxTextureID;
 
 // Modelo para el redener de texto
 FontTypeRendering::FontTypeRendering *modelText;
+FontTypeRendering::FontTypeRendering *damageText;
 
 GLenum types[6] = {
 GL_TEXTURE_CUBE_MAP_POSITIVE_X,
@@ -170,6 +171,7 @@ int modelSelected = 2;
 bool enableCountSelected = true;
 
 int contador_txt=0;
+int contador_damage = 5;
 
 // Variables to animations keyframes
 bool saveFrame = false, availableSave = true;
@@ -213,9 +215,10 @@ bool monedasRender[3] = { true,true,true };
 
 // Enemy positions
 std::vector<glm::vec3> enemyPosition = { glm::vec3(0, 0, -18), glm::vec3(0,0,-33), glm::vec3(0,0,-53) };
+std::vector<glm::vec3> enemyPosition2 = { glm::vec3(0, 0, -20), glm::vec3(0,0,-35), glm::vec3(0,0,-55) };
 // Enemy renders
 bool enemyRender[3] = { true, true, true };
-
+bool enemyRender2[3] = { true, true, true };
 
 // Blending model unsorted
 std::map<std::string, glm::vec3> blendingUnsorted = { { "aircraft", glm::vec3(
@@ -1153,6 +1156,8 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelText = new FontTypeRendering::FontTypeRendering(screenWidth,
 			screenHeight);
 	modelText->Initialize();
+	damageText = new FontTypeRendering::FontTypeRendering(screenWidth, screenHeight);
+	damageText->Initialize();
 }
 
 void destroy() {
@@ -1295,16 +1300,16 @@ bool processInput(bool continueApplication) {
 	}
 
 	if (glfwJoystickPresent(GLFW_JOYSTICK_1) == GL_TRUE) {
-		std::cout << "Esta presente el joystick" << std::endl;
+		//std::cout << "Esta presente el joystick" << std::endl;
 		int axesCount, buttonCount;
 		const float *axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
-		std::cout << "Número de ejes disponibles :=>" << axesCount << std::endl;
-		std::cout << "Left Stick X axis: " << axes[0] << std::endl;
-		std::cout << "Left Stick Y axis: " << axes[1] << std::endl;
-		std::cout << "Left Trigger/L2: " << axes[2] << std::endl;
-		std::cout << "Right Stick X axis: " << axes[3] << std::endl;
-		std::cout << "Right Stick Y axis: " << axes[4] << std::endl;
-		std::cout << "Right Trigger/R2: " << axes[5] << std::endl;
+		//std::cout << "Número de ejes disponibles :=>" << axesCount << std::endl;
+		//std::cout << "Left Stick X axis: " << axes[0] << std::endl;
+		//std::cout << "Left Stick Y axis: " << axes[1] << std::endl;
+		//std::cout << "Left Trigger/L2: " << axes[2] << std::endl;
+		//std::cout << "Right Stick X axis: " << axes[3] << std::endl;
+		//std::cout << "Right Stick Y axis: " << axes[4] << std::endl;
+		//std::cout << "Right Trigger/R2: " << axes[5] << std::endl;
 
 		if (fabs(axes[1]) > 0.2) {
 			modelMatrixMayow = glm::translate(modelMatrixMayow,
@@ -1801,7 +1806,12 @@ void applicationLoop() {
 			matrixAdjustEnemigo = glm::translate(matrixAdjustEnemigo, glm::vec3(0, 0, 0));
 			glm::vec3 enemyPosition = glm::vec3(matrixAdjustEnemigo[3]);
 		}
-
+		for (int i = 0; i < enemyPosition2.size(); i++) {
+			glm::mat4 matrixAdjustEnemigo2 = glm::mat4(1.0f);
+			matrixAdjustEnemigo2 = glm::translate(matrixAdjustEnemigo2, enemyPosition2[i]);
+			matrixAdjustEnemigo2 = glm::translate(matrixAdjustEnemigo2, glm::vec3(0, 0, 0));
+			glm::vec3 enemyPosition2 = glm::vec3(matrixAdjustEnemigo2[3]);
+		}
 
 
 		/*******************************************
@@ -1988,6 +1998,16 @@ void applicationLoop() {
 			enemyCollider.ratio = modelEnemy.getSbb().ratio*0.5;
 			std::get<0>(collidersSBB.find("enemy" + std::to_string(i))->second) = enemyCollider;
 		}
+		for (int i = 0; i < enemyPosition2.size(); i++) {
+			AbstractModel::SBB enemyCollider2;
+			glm::mat4 modelMatrixColliderEnemy2 = glm::mat4(1.0);
+			modelMatrixColliderEnemy2 = glm::translate(modelMatrixColliderEnemy2, enemyPosition2[i]);
+			addOrUpdateColliders(collidersSBB, "enemx" + std::to_string(i), enemyCollider2, modelMatrixColliderEnemy2);
+			modelMatrixColliderEnemy2 = glm::translate(modelMatrixColliderEnemy2, glm::vec3(modelEnemy.getSbb().c.x + EnemySteep, modelEnemy.getSbb().c.y, modelEnemy.getSbb().c.z));
+			enemyCollider2.c = glm::vec3(modelMatrixColliderEnemy2[3]);
+			enemyCollider2.ratio = modelEnemy.getSbb().ratio*0.5;
+			std::get<0>(collidersSBB.find("enemx" + std::to_string(i))->second) = enemyCollider2;
+		}
 
 		//Collider del enemigo/*
 		//Single enemy
@@ -2113,7 +2133,7 @@ void applicationLoop() {
 				if (it != jt
 						&& testOBBOBB(std::get<0>(it->second),
 								std::get<0>(jt->second))) {
-					std::cout << "Colision " << it->first << " with "
+					std::cout << "3Colision " << it->first << " with "
 							<< jt->first << std::endl;
 					isCollision = true;
 				}
@@ -2132,7 +2152,7 @@ void applicationLoop() {
 				if (it != jt
 						&& testSphereSphereIntersection(std::get<0>(it->second),
 								std::get<0>(jt->second))) {
-					std::cout << "Colision " << it->first << " with "
+					std::cout << "2Colision " << it->first << " with "
 							<< jt->first << std::endl;
 					isCollision = true;
 				}
@@ -2151,11 +2171,23 @@ void applicationLoop() {
 			for (; jt != collidersOBB.end(); jt++) {
 				if (testSphereOBox(std::get<0>(it->second),
 						std::get<0>(jt->second))) {
-					std::cout << "Colision " << it->first << " with "
+					std::cout << "1Colision " << it->first << " with "
 							<< jt->first << std::endl;
 					isCollision = true;
 					addOrUpdateCollisionDetection(collisionDetection, jt->first,
 							isCollision);
+					if (it->first.find("enemy") != std::string::npos) {
+						std::string pos = it->first.substr(5, 1);
+						//std::cout << "The enemy" << pos << std::endl;
+						enemyRender[std::stoi(pos)] = false;
+						contador_damage--;
+					}
+					if (it->first.find("enemx") != std::string::npos) {
+						std::string pos = it->first.substr(5, 1);
+						//std::cout << "The enemy" << pos << std::endl;
+						enemyRender2[std::stoi(pos)] = false;
+						contador_damage--;
+					}
 				}
 			}
 			addOrUpdateCollisionDetection(collisionDetection, it->first,
@@ -2181,7 +2213,7 @@ void applicationLoop() {
 				else {
 					//if (jt->first.compare("mayow") == 0)
 					if (jt->first.find("mayow") != std::string::npos)
-						modelMatrixMayow = std::get<1>(jt->second);
+						modelMatrixMayow = std::get<1>(jt->second); 
 					std::cout << "000000000000000000000000000" << std::endl;
 					if (jt->first.find("moneda") != std::string::npos) {
 						std::string pos = jt->first.substr(6, 1);
@@ -2189,6 +2221,8 @@ void applicationLoop() {
 						monedasRender[std::stoi(pos)] = false;	
 						contador_txt++;
 					}
+					
+					
 						
 				}
 			}
@@ -2232,16 +2266,16 @@ void applicationLoop() {
 		switch (stateEnemy) {
 		case 0:
 			EnemySteep += 0.1;
-			std::cout << "Posicion " << EnemySteep << std::endl;
-			std::cout << "Estado " << stateEnemy << std::endl;
+			//std::cout << "Posicion " << EnemySteep << std::endl;
+			//std::cout << "Estado " << stateEnemy << std::endl;
 			if (EnemySteep > 5) {
 				stateEnemy = 1;
 			}
 			break;
 		case 1:
 			EnemySteep -= 0.1;
-			std::cout << "Posicion " << EnemySteep << std::endl;
-			std::cout << "Estado " << stateEnemy << std::endl;
+			//std::cout << "Posicion " << EnemySteep << std::endl;
+			//std::cout << "Estado " << stateEnemy << std::endl;
 			if (EnemySteep < 0) {
 				EnemySteep = 0.0;
 				stateEnemy = 0;
@@ -2253,8 +2287,11 @@ void applicationLoop() {
 
 
 		modelText->render("Puntuacion " + std::to_string(contador_txt), -1, 0);
+		damageText->render("Vida restante: " + std::to_string(contador_damage), -1, 0.8);
 		glfwSwapBuffers(window);
 
+		/*
+		glfwSwapBuffers(window);*/
 		/****************************+
 		 * Open AL sound data
 		 */
@@ -2492,6 +2529,17 @@ void renderScene(bool renderParticles) {
 		else {
 			enemyPosition[i].y = -100;
 			modelEnemy.setPosition(enemyPosition[i]);
+		}
+	}
+	for (int i = 0; i < enemyPosition2.size(); i++) {
+		if (enemyRender2[i]) {
+			enemyPosition2[i].y = terrain.getHeightTerrain(enemyPosition2[i].x + EnemySteep, enemyPosition2[i].z);
+			modelEnemy.setPosition(glm::vec3(enemyPosition2[i].x + EnemySteep, enemyPosition2[i].y, enemyPosition2[i].z));
+			modelEnemy.render();
+		}
+		else {
+			enemyPosition2[i].y = -100;
+			modelEnemy.setPosition(enemyPosition2[i]);
 		}
 	}
 
