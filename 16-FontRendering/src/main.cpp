@@ -93,22 +93,7 @@ Box boxLightViewBox;
 ShadowBox *shadowBox;
 
 // Models complex instances
-Model modelRock;
 Model modelEnemy;
-Model modelAircraft;
-Model modelHeliChasis;
-Model modelHeliHeli;
-Model modelLambo;
-Model modelLamboLeftDor;
-Model modelLamboRightDor;
-Model modelLamboFrontLeftWheel;
-Model modelLamboFrontRightWheel;
-Model modelLamboRearLeftWheel;
-Model modelLamboRearRightWheel;
-// Lamps
-Model modelLamp1;
-Model modelLamp2;
-Model modelLampPost2;
 
 //estrellas
 Model modelEstrella;
@@ -122,8 +107,8 @@ Model modelGrass;
 Model modelFountain;
 // Model animate instance
 // 
-// Mayow
-Model mayowModelAnimate;
+// Mario
+Model marioModelAnimate;
 // Terrain model instance
 Terrain terrain(-1, -1, 200, 16, "../Textures/Terreno.png");
 
@@ -158,12 +143,8 @@ int lastMousePosX, offsetX = 0;
 int lastMousePosY, offsetY = 0;
 
 // Model matrix definitions
-glm::mat4 matrixModelRock = glm::mat4(1.0);
 glm::mat4 modelMatrixEnemy = glm::mat4(1.0);
-glm::mat4 modelMatrixHeli = glm::mat4(1.0f);
-glm::mat4 modelMatrixLambo = glm::mat4(1.0);
-glm::mat4 modelMatrixAircraft = glm::mat4(1.0);
-glm::mat4 modelMatrixMayow = glm::mat4(1.0f);
+glm::mat4 modelMatrixMario = glm::mat4(1.0f);
 glm::mat4 modelMatrixFountain = glm::mat4(1.0f);
 
 int animationIndex = 1;
@@ -179,33 +160,15 @@ std::ofstream myfile;
 std::string fileName = "";
 bool record = false;
 
-// Var animate helicopter
-float rotHelHelY = 0.0;
-
-// Var animate lambo dor
-int stateDoor = 0;
-float dorRotCount = 0.0;
-
 // Var animate enemy
 int stateEnemy = 0;
 float EnemySteep = 0.0;
-
-
-// Lamps positions
-std::vector<glm::vec3> lamp1Position = { glm::vec3(-7.03, 0, -19.14), glm::vec3(
-		24.41, 0, -34.57), glm::vec3(-10.15, 0, -54.10) };
-std::vector<float> lamp1Orientation = { -17.0, -82.67, 23.70 };
-std::vector<glm::vec3> lamp2Position = { glm::vec3(-36.52, 0, -23.24),
-		glm::vec3(-52.73, 0, -3.90) };
-std::vector<float> lamp2Orientation = { 21.37 + 90, -65.0 + 90 };
 
 //Estrellas posicion
 
 std::vector<glm::vec3> estrellaPosition = { glm::vec3(-7.03, 0, -16.14), glm::vec3(
 		24.41, 0, -32.57), glm::vec3(-10.15, 0, -52.10) };
 std::vector<float> estrellaOrientation = { 21.37 + 90, -65.0 + 90 };
-
-
 
 // monedas positions
 std::vector<glm::vec3> monedaPosition = { glm::vec3(0, 0, -19.14), glm::vec3(
@@ -221,11 +184,7 @@ bool enemyRender[3] = { true, true, true };
 bool enemyRender2[3] = { true, true, true };
 
 // Blending model unsorted
-std::map<std::string, glm::vec3> blendingUnsorted = { { "aircraft", glm::vec3(
-		10.0, 0.0, -17.5) }, { "lambo", glm::vec3(23.0, 0.0, 0.0) }, { "heli",
-		glm::vec3(5.0, 10.0, -5.0) },
-		{ "fountain", glm::vec3(5.0, 0.0, -40.0) }, { "fire", glm::vec3(0.0,
-				0.0, 7.0) } };
+std::map<std::string, glm::vec3> blendingUnsorted = { { "fountain", glm::vec3(5.0, 0.0, -40.0) }, { "fire", glm::vec3(0.0, 0.0, 7.0) } };
 
 double deltaTime;
 double currTime, lastTime;
@@ -558,57 +517,13 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	boxLightViewBox.init();
 	boxLightViewBox.setShader(&shaderViewDepth);
 
-	//modelRock.loadModel("../models/rock/rock.obj");
-	//modelRock.loadModel("../models/tortuga/tortuga.obj");
-	modelRock.loadModel("../models/moneda/moneda.fbx");
-	modelRock.setShader(&shaderMulLighting);
-
 	//Enemy
 	modelEnemy.loadModel("../models/tortuga/tortuga1.fbx");
 	modelEnemy.setShader(&shaderMulLighting);
 
-	modelAircraft.loadModel("../models/Aircraft_obj/E 45 Aircraft_obj.obj");
-	modelAircraft.setShader(&shaderMulLighting);
-
 	terrain.init();
 	terrain.setShader(&shaderTerrain);
 	terrain.setPosition(glm::vec3(100, 0, 100));
-
-	// Helicopter
-	modelHeliChasis.loadModel("../models/Helicopter/Mi_24_chasis.obj");
-	modelHeliChasis.setShader(&shaderMulLighting);
-	modelHeliHeli.loadModel("../models/Helicopter/Mi_24_heli.obj");
-	modelHeliHeli.setShader(&shaderMulLighting);
-	// Lamborginhi
-	modelLambo.loadModel(
-			"../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_chasis.obj");
-	modelLambo.setShader(&shaderMulLighting);
-	modelLamboLeftDor.loadModel(
-			"../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_left_dor.obj");
-	modelLamboLeftDor.setShader(&shaderMulLighting);
-	modelLamboRightDor.loadModel(
-			"../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_right_dor.obj");
-	modelLamboRightDor.setShader(&shaderMulLighting);
-	modelLamboFrontLeftWheel.loadModel(
-			"../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_front_left_wheel.obj");
-	modelLamboFrontLeftWheel.setShader(&shaderMulLighting);
-	modelLamboFrontRightWheel.loadModel(
-			"../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_front_right_wheel.obj");
-	modelLamboFrontRightWheel.setShader(&shaderMulLighting);
-	modelLamboRearLeftWheel.loadModel(
-			"../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_rear_left_wheel.obj");
-	modelLamboRearLeftWheel.setShader(&shaderMulLighting);
-	modelLamboRearRightWheel.loadModel(
-			"../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_rear_right_wheel.obj");
-	modelLamboRearRightWheel.setShader(&shaderMulLighting);
-
-	//Lamp models
-	modelLamp1.loadModel("../models/Street-Lamp-Black/objLamp.obj");
-	modelLamp1.setShader(&shaderMulLighting);
-	modelLamp2.loadModel("../models/Street_Light/Lamp.obj");
-	modelLamp2.setShader(&shaderMulLighting);
-	modelLampPost2.loadModel("../models/Street_Light/LampPost.obj");
-	modelLampPost2.setShader(&shaderMulLighting);
 
 	//estrella models
 	modelEstrella.loadModel("../models/estrella/estrella.fbx");
@@ -626,13 +541,9 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelFountain.loadModel("../models/fountain/fountain.obj");
 	modelFountain.setShader(&shaderMulLighting);
 
-	//Mayow
-	/*mayowModelAnimate.loadModel("../models/mayow/personaje2.fbx");
-	mayowModelAnimate.setShader(&shaderMulLighting);*/
-
 	//Mario
-	mayowModelAnimate.loadModel("../models/mario/marioAnimate.fbx");
-	mayowModelAnimate.setShader(&shaderMulLighting);
+	marioModelAnimate.loadModel("../models/mario/marioAnimate.fbx");
+	marioModelAnimate.setShader(&shaderMulLighting);
 
 	camera->setPosition(glm::vec3(0.0, 0.0, 10.0));
 	camera->setDistanceFromTarget(distanceFromTarget);
@@ -1214,23 +1125,8 @@ void destroy() {
 	// Terrains objects Delete
 	terrain.destroy();
 
-	// Custom objects Delete
-	modelAircraft.destroy();
-	modelHeliChasis.destroy();
-	modelHeliHeli.destroy();
-	modelLambo.destroy();
-	modelLamboFrontLeftWheel.destroy();
-	modelLamboFrontRightWheel.destroy();
-	modelLamboLeftDor.destroy();
-	modelLamboRearLeftWheel.destroy();
-	modelLamboRearRightWheel.destroy();
-	modelLamboRightDor.destroy();
-	modelRock.destroy();
-	//Enemygo
 	modelEnemy.destroy();
-	modelLamp1.destroy();
-	modelLamp2.destroy();
-	modelLampPost2.destroy();
+
 	//estrellas
 	modelEstrella.destroy();
 	//monedas
@@ -1239,7 +1135,7 @@ void destroy() {
 	modelFountain.destroy();
 
 	// Custom objects animate
-	mayowModelAnimate.destroy();
+	marioModelAnimate.destroy();
 
 	// Textures Delete
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -1342,12 +1238,12 @@ bool processInput(bool continueApplication) {
 		//std::cout << "Right Trigger/R2: " << axes[5] << std::endl;
 
 		if (fabs(axes[1]) > 0.2) {
-			modelMatrixMayow = glm::translate(modelMatrixMayow,
+			modelMatrixMario = glm::translate(modelMatrixMario,
 					glm::vec3(0, 0, -axes[1] * 0.1));
 			animationIndex = 0;
 		}
 		if (fabs(axes[0]) > 0.2) {
-			modelMatrixMayow = glm::rotate(modelMatrixMayow,
+			modelMatrixMario = glm::rotate(modelMatrixMario,
 					glm::radians(-axes[0] * 0.5f), glm::vec3(0, 1, 0));
 			animationIndex = 0;
 		}
@@ -1388,22 +1284,22 @@ bool processInput(bool continueApplication) {
 		availableSave = true;
 
 	if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-		modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(1.0f),
+		modelMatrixMario = glm::rotate(modelMatrixMario, glm::radians(1.0f),
 				glm::vec3(0, 1, 0));
 		animationIndex = 0;
 	} else if (modelSelected
 			== 2&& glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-		modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-1.0f),
+		modelMatrixMario = glm::rotate(modelMatrixMario, glm::radians(-1.0f),
 				glm::vec3(0, 1, 0));
 		animationIndex = 0;
 	}
 	if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-		modelMatrixMayow = glm::translate(modelMatrixMayow,
+		modelMatrixMario = glm::translate(modelMatrixMario,
 				glm::vec3(0, 0, 0.1));
 		animationIndex = 0;
 	} else if (modelSelected
 			== 2&& glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-		modelMatrixMayow = glm::translate(modelMatrixMayow,
+		modelMatrixMario = glm::translate(modelMatrixMario,
 				glm::vec3(0, 0, -0.1));
 		animationIndex = 0;
 	}
@@ -1428,26 +1324,11 @@ void applicationLoop() {
 	glm::vec3 target;
 	float angleTarget;
 
-	matrixModelRock = glm::translate(matrixModelRock,
-			glm::vec3(-3.0, 0.0, 2.0));
-
-	/*modelMatrixEnemy = glm::translate(modelMatrixEnemy,
-		glm::vec3(-4.0, 0.0, 2.0));*/
-
-	modelMatrixHeli = glm::translate(modelMatrixHeli,
-			glm::vec3(5.0, 10.0, -5.0));
-
-	modelMatrixAircraft = glm::translate(modelMatrixAircraft,
-			glm::vec3(10.0, 2.0, -17.5));
-
-	modelMatrixLambo = glm::translate(modelMatrixLambo,
-			glm::vec3(23.0, 0.0, 0.0));
-
-	modelMatrixMayow = glm::translate(modelMatrixMayow,
+	modelMatrixMario = glm::translate(modelMatrixMario,
 			glm::vec3(13.0f, 0.05f, -5.0f));
-	modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-90.0f),
+	modelMatrixMario = glm::rotate(modelMatrixMario, glm::radians(-90.0f),
 			glm::vec3(0, 1, 0));
-	//modelMatrixMayow = glm::scale(modelMatrixMayow,
+	//modelMatrixMario = glm::scale(modelMatrixMario,
 		//glm::vec3(0.5f, 0.5f, 0.5f));
 
 
@@ -1491,9 +1372,9 @@ void applicationLoop() {
 		if (modelSelected == 1) {
 
 		} else {
-			axis = glm::axis(glm::quat_cast(modelMatrixMayow));
-			angleTarget = glm::angle(glm::quat_cast(modelMatrixMayow));
-			target = modelMatrixMayow[3];
+			axis = glm::axis(glm::quat_cast(modelMatrixMario));
+			angleTarget = glm::angle(glm::quat_cast(modelMatrixMario));
+			target = modelMatrixMario[3];
 		}
 
 		if (std::isnan(angleTarget))
@@ -1601,169 +1482,16 @@ void applicationLoop() {
 		/*******************************************
 		 * Propiedades SpotLights
 		 *******************************************/
-		glm::vec3 spotPosition = glm::vec3(
-				modelMatrixHeli * glm::vec4(0.32437, 0.226053, 1.79149, 1.0));
-		shaderMulLighting.setInt("spotLightCount", 1);
-		shaderTerrain.setInt("spotLightCount", 1);
-		shaderMulLighting.setVectorFloat3("spotLights[0].light.ambient",
-				glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
-		shaderMulLighting.setVectorFloat3("spotLights[0].light.diffuse",
-				glm::value_ptr(glm::vec3(0.2, 0.3, 0.2)));
-		shaderMulLighting.setVectorFloat3("spotLights[0].light.specular",
-				glm::value_ptr(glm::vec3(0.3, 0.3, 0.3)));
-		shaderMulLighting.setVectorFloat3("spotLights[0].position",
-				glm::value_ptr(spotPosition));
-		shaderMulLighting.setVectorFloat3("spotLights[0].direction",
-				glm::value_ptr(glm::vec3(0, -1, 0)));
-		shaderMulLighting.setFloat("spotLights[0].constant", 1.0);
-		shaderMulLighting.setFloat("spotLights[0].linear", 0.074);
-		shaderMulLighting.setFloat("spotLights[0].quadratic", 0.03);
-		shaderMulLighting.setFloat("spotLights[0].cutOff",
-				cos(glm::radians(12.5f)));
-		shaderMulLighting.setFloat("spotLights[0].outerCutOff",
-				cos(glm::radians(15.0f)));
-		shaderTerrain.setVectorFloat3("spotLights[0].light.ambient",
-				glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
-		shaderTerrain.setVectorFloat3("spotLights[0].light.diffuse",
-				glm::value_ptr(glm::vec3(0.2, 0.3, 0.2)));
-		shaderTerrain.setVectorFloat3("spotLights[0].light.specular",
-				glm::value_ptr(glm::vec3(0.3, 0.3, 0.3)));
-		shaderTerrain.setVectorFloat3("spotLights[0].position",
-				glm::value_ptr(spotPosition));
-		shaderTerrain.setVectorFloat3("spotLights[0].direction",
-				glm::value_ptr(glm::vec3(0, -1, 0)));
-		shaderTerrain.setFloat("spotLights[0].constant", 1.0);
-		shaderTerrain.setFloat("spotLights[0].linear", 0.074);
-		shaderTerrain.setFloat("spotLights[0].quadratic", 0.03);
-		shaderTerrain.setFloat("spotLights[0].cutOff",
-				cos(glm::radians(12.5f)));
-		shaderTerrain.setFloat("spotLights[0].outerCutOff",
-				cos(glm::radians(15.0f)));
 
 		/*******************************************
 		 * Propiedades PointLights
 		 *******************************************/
-		shaderMulLighting.setInt("pointLightCount",
-				lamp1Position.size() + lamp2Orientation.size());
-		shaderTerrain.setInt("pointLightCount",
-				lamp1Position.size() + lamp2Orientation.size());
-
-
-		for (int i = 0; i < lamp1Position.size(); i++) {
-			glm::mat4 matrixAdjustLamp = glm::mat4(1.0f);
-			matrixAdjustLamp = glm::translate(matrixAdjustLamp,
-					lamp1Position[i]);
-			matrixAdjustLamp = glm::rotate(matrixAdjustLamp,
-					glm::radians(lamp1Orientation[i]), glm::vec3(0, 1, 0));
-			matrixAdjustLamp = glm::scale(matrixAdjustLamp,
-					glm::vec3(0.5, 0.5, 0.5));
-			matrixAdjustLamp = glm::translate(matrixAdjustLamp,
-					glm::vec3(0, 10.3585, 0));
-			glm::vec3 lampPosition = glm::vec3(matrixAdjustLamp[3]);
-			shaderMulLighting.setVectorFloat3(
-					"pointLights[" + std::to_string(i) + "].light.ambient",
-					glm::value_ptr(glm::vec3(0.2, 0.16, 0.01)));
-			shaderMulLighting.setVectorFloat3(
-					"pointLights[" + std::to_string(i) + "].light.diffuse",
-					glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
-			shaderMulLighting.setVectorFloat3(
-					"pointLights[" + std::to_string(i) + "].light.specular",
-					glm::value_ptr(glm::vec3(0.6, 0.58, 0.03)));
-			shaderMulLighting.setVectorFloat3(
-					"pointLights[" + std::to_string(i) + "].position",
-					glm::value_ptr(lampPosition));
-			shaderMulLighting.setFloat(
-					"pointLights[" + std::to_string(i) + "].constant", 1.0);
-			shaderMulLighting.setFloat(
-					"pointLights[" + std::to_string(i) + "].linear", 0.09);
-			shaderMulLighting.setFloat(
-					"pointLights[" + std::to_string(i) + "].quadratic", 0.01);
-			shaderTerrain.setVectorFloat3(
-					"pointLights[" + std::to_string(i) + "].light.ambient",
-					glm::value_ptr(glm::vec3(0.2, 0.16, 0.01)));
-			shaderTerrain.setVectorFloat3(
-					"pointLights[" + std::to_string(i) + "].light.diffuse",
-					glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
-			shaderTerrain.setVectorFloat3(
-					"pointLights[" + std::to_string(i) + "].light.specular",
-					glm::value_ptr(glm::vec3(0.6, 0.58, 0.03)));
-			shaderTerrain.setVectorFloat3(
-					"pointLights[" + std::to_string(i) + "].position",
-					glm::value_ptr(lampPosition));
-			shaderTerrain.setFloat(
-					"pointLights[" + std::to_string(i) + "].constant", 1.0);
-			shaderTerrain.setFloat(
-					"pointLights[" + std::to_string(i) + "].linear", 0.09);
-			shaderTerrain.setFloat(
-					"pointLights[" + std::to_string(i) + "].quadratic", 0.02);
-		}
-		for (int i = 0; i < lamp2Position.size(); i++) {
-			glm::mat4 matrixAdjustLamp = glm::mat4(1.0f);
-			matrixAdjustLamp = glm::translate(matrixAdjustLamp,
-					lamp2Position[i]);
-			matrixAdjustLamp = glm::rotate(matrixAdjustLamp,
-					glm::radians(lamp2Orientation[i]), glm::vec3(0, 1, 0));
-			matrixAdjustLamp = glm::scale(matrixAdjustLamp,
-					glm::vec3(1.0, 1.0, 1.0));
-			matrixAdjustLamp = glm::translate(matrixAdjustLamp,
-					glm::vec3(0.759521, 5.00174, 0));
-			glm::vec3 lampPosition = glm::vec3(matrixAdjustLamp[3]);
-			shaderMulLighting.setVectorFloat3(
-					"pointLights[" + std::to_string(lamp1Position.size() + i)
-							+ "].light.ambient",
-					glm::value_ptr(glm::vec3(0.2, 0.16, 0.01)));
-			shaderMulLighting.setVectorFloat3(
-					"pointLights[" + std::to_string(lamp1Position.size() + i)
-							+ "].light.diffuse",
-					glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
-			shaderMulLighting.setVectorFloat3(
-					"pointLights[" + std::to_string(lamp1Position.size() + i)
-							+ "].light.specular",
-					glm::value_ptr(glm::vec3(0.6, 0.58, 0.03)));
-			shaderMulLighting.setVectorFloat3(
-					"pointLights[" + std::to_string(lamp1Position.size() + i)
-							+ "].position", glm::value_ptr(lampPosition));
-			shaderMulLighting.setFloat(
-					"pointLights[" + std::to_string(lamp1Position.size() + i)
-							+ "].constant", 1.0);
-			shaderMulLighting.setFloat(
-					"pointLights[" + std::to_string(lamp1Position.size() + i)
-							+ "].linear", 0.09);
-			shaderMulLighting.setFloat(
-					"pointLights[" + std::to_string(lamp1Position.size() + i)
-							+ "].quadratic", 0.01);
-			shaderTerrain.setVectorFloat3(
-					"pointLights[" + std::to_string(lamp1Position.size() + i)
-							+ "].light.ambient",
-					glm::value_ptr(glm::vec3(0.2, 0.16, 0.01)));
-			shaderTerrain.setVectorFloat3(
-					"pointLights[" + std::to_string(lamp1Position.size() + i)
-							+ "].light.diffuse",
-					glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
-			shaderTerrain.setVectorFloat3(
-					"pointLights[" + std::to_string(lamp1Position.size() + i)
-							+ "].light.specular",
-					glm::value_ptr(glm::vec3(0.6, 0.58, 0.03)));
-			shaderTerrain.setVectorFloat3(
-					"pointLights[" + std::to_string(lamp1Position.size() + i)
-							+ "].position", glm::value_ptr(lampPosition));
-			shaderTerrain.setFloat(
-					"pointLights[" + std::to_string(lamp1Position.size() + i)
-							+ "].constant", 1.0);
-			shaderTerrain.setFloat(
-					"pointLights[" + std::to_string(lamp1Position.size() + i)
-							+ "].linear", 0.09);
-			shaderTerrain.setFloat(
-					"pointLights[" + std::to_string(lamp1Position.size() + i)
-							+ "].quadratic", 0.02);
-		}
-
 		//Propiedades de estrellas
 
 		shaderMulLighting.setInt("pointLightCount",
-			estrellaPosition.size() + estrellaOrientation.size());
+			estrellaPosition.size());
 		shaderTerrain.setInt("pointLightCount",
-			estrellaPosition.size() + estrellaOrientation.size());
+			estrellaPosition.size());
 
 
 		for (int i = 0; i < estrellaPosition.size(); i++) {
@@ -1922,82 +1650,6 @@ void applicationLoop() {
 		 * IMPORTANT do this before interpolations
 		 *******************************************/
 
-		// Collider del aricraft
-		glm::mat4 modelMatrixColliderAircraft = glm::mat4(modelMatrixAircraft);
-		AbstractModel::OBB aircraftCollider;
-		// Set the orientation of collider before doing the scale
-		aircraftCollider.u = glm::quat_cast(modelMatrixAircraft);
-		modelMatrixColliderAircraft = glm::scale(modelMatrixColliderAircraft,
-				glm::vec3(1.0, 1.0, 1.0));
-		modelMatrixColliderAircraft = glm::translate(
-				modelMatrixColliderAircraft, modelAircraft.getObb().c);
-		aircraftCollider.c = glm::vec3(modelMatrixColliderAircraft[3]);
-		aircraftCollider.e = modelAircraft.getObb().e
-				* glm::vec3(1.0, 1.0, 1.0);
-		addOrUpdateColliders(collidersOBB, "aircraft", aircraftCollider,
-				modelMatrixAircraft);
-
-		//Collider del la rock
-		AbstractModel::SBB rockCollider;
-		glm::mat4 modelMatrixColliderRock = glm::mat4(matrixModelRock);
-		modelMatrixColliderRock = glm::scale(modelMatrixColliderRock,
-				glm::vec3(1.0, 1.0, 1.0));
-		modelMatrixColliderRock = glm::translate(modelMatrixColliderRock,
-				modelRock.getSbb().c);
-		rockCollider.c = glm::vec3(modelMatrixColliderRock[3]);
-		rockCollider.ratio = modelRock.getSbb().ratio * 1.0;
-		addOrUpdateColliders(collidersSBB, "rock", rockCollider,
-				matrixModelRock);
-
-
-
-
-		// Lamps1 colliders
-		for (int i = 0; i < lamp1Position.size(); i++) {
-			AbstractModel::OBB lampCollider;
-			glm::mat4 modelMatrixColliderLamp = glm::mat4(1.0);
-			modelMatrixColliderLamp = glm::translate(modelMatrixColliderLamp,
-					lamp1Position[i]);
-			modelMatrixColliderLamp = glm::rotate(modelMatrixColliderLamp,
-					glm::radians(lamp1Orientation[i]), glm::vec3(0, 1, 0));
-			addOrUpdateColliders(collidersOBB, "lamp1-" + std::to_string(i),
-					lampCollider, modelMatrixColliderLamp);
-			// Set the orientation of collider before doing the scale
-			lampCollider.u = glm::quat_cast(modelMatrixColliderLamp);
-			modelMatrixColliderLamp = glm::scale(modelMatrixColliderLamp,
-					glm::vec3(0.5, 0.5, 0.5));
-			modelMatrixColliderLamp = glm::translate(modelMatrixColliderLamp,
-					modelLamp1.getObb().c);
-			lampCollider.c = glm::vec3(modelMatrixColliderLamp[3]);
-			lampCollider.e = modelLamp1.getObb().e * glm::vec3(0.5, 0.5, 0.5);
-			std::get<0>(collidersOBB.find("lamp1-" + std::to_string(i))->second) =
-					lampCollider;
-		}
-
-		// Lamps2 colliders
-		for (int i = 0; i < lamp2Position.size(); i++) {
-			AbstractModel::OBB lampCollider;
-			glm::mat4 modelMatrixColliderLamp = glm::mat4(1.0);
-			modelMatrixColliderLamp = glm::translate(modelMatrixColliderLamp,
-					lamp2Position[i]);
-			modelMatrixColliderLamp = glm::rotate(modelMatrixColliderLamp,
-					glm::radians(lamp2Orientation[i]), glm::vec3(0, 1, 0));
-			addOrUpdateColliders(collidersOBB, "lamp2-" + std::to_string(i),
-					lampCollider, modelMatrixColliderLamp);
-			// Set the orientation of collider before doing the scale
-			lampCollider.u = glm::quat_cast(modelMatrixColliderLamp);
-			modelMatrixColliderLamp = glm::scale(modelMatrixColliderLamp,
-					glm::vec3(1.0, 1.0, 1.0));
-			modelMatrixColliderLamp = glm::translate(modelMatrixColliderLamp,
-					modelLampPost2.getObb().c);
-			lampCollider.c = glm::vec3(modelMatrixColliderLamp[3]);
-			lampCollider.e = modelLampPost2.getObb().e
-					* glm::vec3(1.0, 1.0, 1.0);
-			std::get<0>(collidersOBB.find("lamp2-" + std::to_string(i))->second) =
-					lampCollider;
-		}
-
-
 		//monedas collider
 		for (int i = 0; i < monedaPosition.size(); i++) {
 				AbstractModel::OBB monedaCollider;
@@ -2053,51 +1705,25 @@ void applicationLoop() {
 		addOrUpdateColliders(collidersSBB, "enemy", enemyCollider,
 			modelMatrixEnemy);*/
 
-		// Collider de mayow
-		AbstractModel::OBB mayowCollider;
-		glm::mat4 modelmatrixColliderMayow = glm::mat4(modelMatrixMayow);
-		modelmatrixColliderMayow = glm::rotate(modelmatrixColliderMayow,
+		// Collider de Mario
+		AbstractModel::OBB marioCollider;
+		glm::mat4 modelmatrixColliderMario = glm::mat4(modelMatrixMario);
+		modelmatrixColliderMario = glm::rotate(modelmatrixColliderMario,
 				glm::radians(-90.0f), glm::vec3(1, 0, 0));
 		// Set the orientation of collider before doing the scale
-		mayowCollider.u = glm::quat_cast(modelmatrixColliderMayow);
-		modelmatrixColliderMayow = glm::scale(modelmatrixColliderMayow,
+		marioCollider.u = glm::quat_cast(modelmatrixColliderMario);
+		modelmatrixColliderMario = glm::scale(modelmatrixColliderMario,
 				glm::vec3(0.4, 0.8, 0.8));
-		modelmatrixColliderMayow = glm::translate(modelmatrixColliderMayow,
-				glm::vec3(mayowModelAnimate.getObb().c.x-0.1,
-						mayowModelAnimate.getObb().c.y-0.1,
-						mayowModelAnimate.getObb().c.z+1));
-		mayowCollider.e = mayowModelAnimate.getObb().e
+		modelmatrixColliderMario = glm::translate(modelmatrixColliderMario,
+				glm::vec3(marioModelAnimate.getObb().c.x-0.1,
+						marioModelAnimate.getObb().c.y-0.1,
+						marioModelAnimate.getObb().c.z+1));
+		marioCollider.e = marioModelAnimate.getObb().e
 				* glm::vec3(0.4, 0.8, 0.8)
 				* glm::vec3(0.787401574, 0.787401574, 0.787401574);
-		mayowCollider.c = glm::vec3(modelmatrixColliderMayow[3]);
-		addOrUpdateColliders(collidersOBB, "mayow", mayowCollider,
-				modelMatrixMayow);
-
-
-		
-
-
-
-		//Collider del enemigo
-		/*
-		AbstractModel::OBB enemyCollider;
-		glm::mat4 modelmatrixColliderEnemy = glm::mat4(modelMatrixEnemy);
-		modelmatrixColliderEnemy = glm::rotate(modelmatrixColliderEnemy,
-			glm::radians(-90.0f), glm::vec3(1, 0, 0));
-		// Set the orientation of collider before doing the scale
-		enemyCollider.u = glm::quat_cast(modelmatrixColliderEnemy);
-		modelmatrixColliderEnemy = glm::scale(modelmatrixColliderEnemy,
-			glm::vec3(0.4, 0.8, 0.8));
-		modelmatrixColliderEnemy = glm::translate(modelmatrixColliderEnemy,
-			glm::vec3(modelEnemy.getObb().c.x - 0.1,
-				modelEnemy.getObb().c.y - 0.1,
-				modelEnemy.getObb().c.z + 1));
-		enemyCollider.e = modelEnemy.getObb().e
-			* glm::vec3(0.4, 0.8, 0.8)
-			* glm::vec3(0.787401574, 0.787401574, 0.787401574);
-		enemyCollider.c = glm::vec3(modelmatrixColliderEnemy[3]);
-		addOrUpdateColliders(collidersOBB, "enemy", enemyCollider,
-			modelMatrixEnemy);*/
+		marioCollider.c = glm::vec3(modelmatrixColliderMario[3]);
+		addOrUpdateColliders(collidersOBB, "Mario", marioCollider,
+				modelMatrixMario);
 
 
 		/*******************************************
@@ -2130,26 +1756,6 @@ void applicationLoop() {
 			sphereCollider.enableWireMode();
 			sphereCollider.render(matrixCollider);
 		}
-
-		// Esto es para ilustrar la transformacion inversa de los coliders
-		/*glm::vec3 cinv = glm::inverse(mayowCollider.u) * glm::vec4(rockCollider.c, 1.0);
-		 glm::mat4 invColliderS = glm::mat4(1.0);
-		 invColliderS = glm::translate(invColliderS, cinv);
-		 invColliderS =  invColliderS * glm::mat4(mayowCollider.u);
-		 invColliderS = glm::scale(invColliderS, glm::vec3(rockCollider.ratio * 2.0, rockCollider.ratio * 2.0, rockCollider.ratio * 2.0));
-		 sphereCollider.setColor(glm::vec4(1.0, 1.0, 0.0, 1.0));
-		 sphereCollider.enableWireMode();
-		 sphereCollider.render(invColliderS);
-		 glm::vec3 cinv2 = glm::inverse(mayowCollider.u) * glm::vec4(mayowCollider.c, 1.0);
-		 glm::mat4 invColliderB = glm::mat4(1.0);
-		 invColliderB = glm::translate(invColliderB, cinv2);
-		 invColliderB = glm::scale(invColliderB, mayowCollider.e * 2.0f);
-		 boxCollider.setColor(glm::vec4(1.0, 1.0, 0.0, 1.0));
-		 boxCollider.enableWireMode();
-		 boxCollider.render(invColliderB);
-		 // Se regresa el color blanco
-		 sphereCollider.setColor(glm::vec4(1.0, 1.0, 1.0, 1.0));
-		 boxCollider.setColor(glm::vec4(1.0, 1.0, 1.0, 1.0));*/
 
 		/*******************************************
 		 * Test Colisions
@@ -2258,9 +1864,9 @@ void applicationLoop() {
 				if (!colIt->second)
 					addOrUpdateColliders(collidersOBB, jt->first);
 				else {
-					//if (jt->first.compare("mayow") == 0)
-					if (jt->first.find("mayow") != std::string::npos)
-						modelMatrixMayow = std::get<1>(jt->second); 
+					//if (jt->first.compare("Mario") == 0)
+					if (jt->first.find("Mario") != std::string::npos)
+						modelMatrixMario = std::get<1>(jt->second); 
 					std::cout << "000000000000000000000000000" << std::endl;
 					if (jt->first.find("moneda") != std::string::npos) {
 						std::string pos = jt->first.substr(6, 1);
@@ -2287,7 +1893,6 @@ void applicationLoop() {
 		 *******************************************/
 
 		// Constantes de animaciones
-		rotHelHelY += 0.5;
 		animationIndex = 1;
 
 		/*******************************************
@@ -2295,27 +1900,6 @@ void applicationLoop() {
 		 *******************************************/
 
 		// State machine for the lambo car
-
-		switch (stateDoor) {
-		case 0:
-			dorRotCount += 0.1;
-			//std::cout << "Posicion " << dorRotCount << std::endl;
-			//std::cout << "Estado " << stateDoor << std::endl;
-			if (dorRotCount > 70) {
-				stateDoor = 1;
-			}
-			break;
-		case 1:
-			dorRotCount -= 0.1;
-			//std::cout << "Posicion " << dorRotCount << std::endl;
-			//std::cout << "Estado " << stateDoor << std::endl;
-			if (dorRotCount < 0) {
-				dorRotCount = 0.0;
-				stateDoor = 0;
-			}
-			break;
-		}
-
 
 		switch (stateEnemy) {
 		case 0:
@@ -2354,24 +1938,24 @@ void applicationLoop() {
 		source0Pos[2] = modelMatrixFountain[3].z;
 		alSourcefv(source[0], AL_POSITION, source0Pos);
 
-		source4Pos[0] = modelMatrixMayow[3].x;
-		source4Pos[1] = modelMatrixMayow[3].y;
-		source4Pos[2] = modelMatrixMayow[3].z;
+		source4Pos[0] = modelMatrixMario[3].x;
+		source4Pos[1] = modelMatrixMario[3].y;
+		source4Pos[2] = modelMatrixMario[3].z;
 		alSourcefv(source[4], AL_POSITION, source4Pos);
 
 
 
 		// Listener for the Thris person camera
-		listenerPos[0] = modelMatrixMayow[3].x;
-		listenerPos[1] = modelMatrixMayow[3].y;
-		listenerPos[2] = modelMatrixMayow[3].z;
+		listenerPos[0] = modelMatrixMario[3].x;
+		listenerPos[1] = modelMatrixMario[3].y;
+		listenerPos[2] = modelMatrixMario[3].z;
 		alListenerfv(AL_POSITION, listenerPos);
 
 
 
 
-		glm::vec3 upModel = glm::normalize(modelMatrixMayow[1]);
-		glm::vec3 frontModel = glm::normalize(modelMatrixMayow[2]);
+		glm::vec3 upModel = glm::normalize(modelMatrixMario[1]);
+		glm::vec3 frontModel = glm::normalize(modelMatrixMario[2]);
 
 		listenerOri[0] = frontModel.x;
 		listenerOri[1] = frontModel.y;
@@ -2406,30 +1990,10 @@ void prepareScene() {
 
 	skyboxSphere.setShader(&shaderSkybox);
 
-	modelRock.setShader(&shaderMulLighting);
 	//Enemigo
 	modelEnemy.setShader(&shaderMulLighting);
 
-	modelAircraft.setShader(&shaderMulLighting);
-
 	terrain.setShader(&shaderTerrain);
-
-	// Helicopter
-	modelHeliChasis.setShader(&shaderMulLighting);
-	modelHeliHeli.setShader(&shaderMulLighting);
-	// Lamborginhi
-	modelLambo.setShader(&shaderMulLighting);
-	modelLamboLeftDor.setShader(&shaderMulLighting);
-	modelLamboRightDor.setShader(&shaderMulLighting);
-	modelLamboFrontLeftWheel.setShader(&shaderMulLighting);
-	modelLamboFrontRightWheel.setShader(&shaderMulLighting);
-	modelLamboRearLeftWheel.setShader(&shaderMulLighting);
-	modelLamboRearRightWheel.setShader(&shaderMulLighting);
-
-	//Lamp models
-	modelLamp1.setShader(&shaderMulLighting);
-	modelLamp2.setShader(&shaderMulLighting);
-	modelLampPost2.setShader(&shaderMulLighting);
 
 	//estrellas
 	modelEstrella.setShader(&shaderMulLighting);
@@ -2440,8 +2004,8 @@ void prepareScene() {
 	//Grass
 	modelGrass.setShader(&shaderMulLighting);
 
-	//Mayow
-	mayowModelAnimate.setShader(&shaderMulLighting);
+	//Mario
+	marioModelAnimate.setShader(&shaderMulLighting);
 
 	
 }
@@ -2450,30 +2014,10 @@ void prepareDepthScene() {
 
 	skyboxSphere.setShader(&shaderDepth);
 
-	modelRock.setShader(&shaderDepth);
 	//enemy
 	modelEnemy.setShader(&shaderDepth);
 
-	modelAircraft.setShader(&shaderDepth);
-
 	terrain.setShader(&shaderDepth);
-
-	// Helicopter
-	modelHeliChasis.setShader(&shaderDepth);
-	modelHeliHeli.setShader(&shaderDepth);
-	// Lamborginhi
-	modelLambo.setShader(&shaderDepth);
-	modelLamboLeftDor.setShader(&shaderDepth);
-	modelLamboRightDor.setShader(&shaderDepth);
-	modelLamboFrontLeftWheel.setShader(&shaderDepth);
-	modelLamboFrontRightWheel.setShader(&shaderDepth);
-	modelLamboRearLeftWheel.setShader(&shaderDepth);
-	modelLamboRearRightWheel.setShader(&shaderDepth);
-
-	//Lamp models
-	modelLamp1.setShader(&shaderDepth);
-	modelLamp2.setShader(&shaderDepth);
-	modelLampPost2.setShader(&shaderDepth);
 
 	//estrellas
 	modelEstrella.setShader(&shaderDepth);
@@ -2481,8 +2025,8 @@ void prepareDepthScene() {
 	//Grass
 	modelGrass.setShader(&shaderDepth);
 
-	//Mayow
-	mayowModelAnimate.setShader(&shaderDepth);
+	//Mario
+	marioModelAnimate.setShader(&shaderDepth);
 }
 
 void renderScene(bool renderParticles) {
@@ -2520,38 +2064,9 @@ void renderScene(bool renderParticles) {
 	/*******************************************
 	 * Custom objects obj
 	 *******************************************/
-	//Rock render
-	matrixModelRock[3][1] = terrain.getHeightTerrain(matrixModelRock[3][0],
-			matrixModelRock[3][2]);
-	modelRock.render(matrixModelRock);
+
 	// Forze to enable the unit texture to 0 always ----------------- IMPORTANT
 	glActiveTexture(GL_TEXTURE0);
-
-
-
-
-	// Render the lamps
-	for (int i = 0; i < lamp1Position.size(); i++) {
-		lamp1Position[i].y = terrain.getHeightTerrain(lamp1Position[i].x,
-				lamp1Position[i].z);
-		modelLamp1.setPosition(lamp1Position[i]);
-		modelLamp1.setScale(glm::vec3(0.5, 0.5, 0.5));
-		modelLamp1.setOrientation(glm::vec3(0, lamp1Orientation[i], 0));
-		modelLamp1.render();
-	}
-
-	for (int i = 0; i < lamp2Position.size(); i++) {
-		lamp2Position[i].y = terrain.getHeightTerrain(lamp2Position[i].x,
-				lamp2Position[i].z);
-		modelLamp2.setPosition(lamp2Position[i]);
-		modelLamp2.setScale(glm::vec3(1.0, 1.0, 1.0));
-		modelLamp2.setOrientation(glm::vec3(0, lamp2Orientation[i], 0));
-		modelLamp2.render();
-		modelLampPost2.setPosition(lamp2Position[i]);
-		modelLampPost2.setScale(glm::vec3(1.0, 1.0, 1.0));
-		modelLampPost2.setOrientation(glm::vec3(0, lamp2Orientation[i], 0));
-		modelLampPost2.render();
-	}
 
 	// Render de estrellas
 	for (int i = 0; i < estrellaPosition.size(); i++) {
@@ -2562,9 +2077,6 @@ void renderScene(bool renderParticles) {
 		modelEstrella.setOrientation(glm::vec3(0, estrellaOrientation[i], 0));
 		modelEstrella.render();
 	}
-
-
-
 
 	//Render monedas
 	for (int i = 0; i < monedaPosition.size(); i++) {
@@ -2637,23 +2149,23 @@ void renderScene(bool renderParticles) {
 	/*******************************************
 	 * Custom Anim objects obj
 	 *******************************************/
-	modelMatrixMayow[3][1] = -GRAVITY * tmv * tmv + 3.5 * tmv
-			+ terrain.getHeightTerrain(modelMatrixMayow[3][0],
-					modelMatrixMayow[3][2]);
+	modelMatrixMario[3][1] = -GRAVITY * tmv * tmv + 3.5 * tmv
+			+ terrain.getHeightTerrain(modelMatrixMario[3][0],
+					modelMatrixMario[3][2]);
 	tmv = currTime - startTimeJump;
-	if (modelMatrixMayow[3][1]
-			< terrain.getHeightTerrain(modelMatrixMayow[3][0],
-					modelMatrixMayow[3][2])) {
+	if (modelMatrixMario[3][1]
+			< terrain.getHeightTerrain(modelMatrixMario[3][0],
+					modelMatrixMario[3][2])) {
 		isJump = false;
-		modelMatrixMayow[3][1] = terrain.getHeightTerrain(
-				modelMatrixMayow[3][0], modelMatrixMayow[3][2]);
+		modelMatrixMario[3][1] = terrain.getHeightTerrain(
+				modelMatrixMario[3][0], modelMatrixMario[3][2]);
 	}
-	//modelMatrixMayow[3][1] = terrain.getHeightTerrain(modelMatrixMayow[3][0], modelMatrixMayow[3][2]);
-	glm::mat4 modelMatrixMayowBody = glm::mat4(modelMatrixMayow);
-	modelMatrixMayowBody = glm::scale(modelMatrixMayowBody,
+	//modelMatrixMario[3][1] = terrain.getHeightTerrain(modelMatrixMario[3][0], modelMatrixMario[3][2]);
+	glm::mat4 modelMatrixMarioBody = glm::mat4(modelMatrixMario);
+	modelMatrixMarioBody = glm::scale(modelMatrixMarioBody,
 			glm::vec3(0.021, 0.021, 0.021));
-	mayowModelAnimate.setAnimationIndex(animationIndex);
-	mayowModelAnimate.render(modelMatrixMayowBody);
+	marioModelAnimate.setAnimationIndex(animationIndex);
+	marioModelAnimate.render(modelMatrixMarioBody);
 
 
 
@@ -2670,12 +2182,12 @@ void renderScene(bool renderParticles) {
 	 * Update the position with alpha objects
 	 */
 	// Update the aircraft
-	blendingUnsorted.find("aircraft")->second = glm::vec3(
-			modelMatrixAircraft[3]);
-	// Update the lambo
-	blendingUnsorted.find("lambo")->second = glm::vec3(modelMatrixLambo[3]);
-	// Update the helicopter
-	blendingUnsorted.find("heli")->second = glm::vec3(modelMatrixHeli[3]);
+	//blendingUnsorted.find("aircraft")->second = glm::vec3(
+	//		modelMatrixAircraft[3]);
+	//// Update the lambo
+	//blendingUnsorted.find("lambo")->second = glm::vec3(modelMatrixLambo[3]);
+	//// Update the helicopter
+	//blendingUnsorted.find("heli")->second = glm::vec3(modelMatrixHeli[3]);
 
 	/**********
 	 * Sorter with alpha objects
@@ -2698,54 +2210,7 @@ void renderScene(bool renderParticles) {
 	glDisable(GL_CULL_FACE);
 	for (std::map<float, std::pair<std::string, glm::vec3> >::reverse_iterator it =
 			blendingSorted.rbegin(); it != blendingSorted.rend(); it++) {
-		if (it->second.first.compare("aircraft") == 0) {
-			// Render for the aircraft model
-			glm::mat4 modelMatrixAircraftBlend = glm::mat4(modelMatrixAircraft);
-			modelMatrixAircraftBlend[3][1] = terrain.getHeightTerrain(
-					modelMatrixAircraftBlend[3][0],
-					modelMatrixAircraftBlend[3][2]) + 2.0;
-			modelAircraft.render(modelMatrixAircraftBlend);
-		} else if (it->second.first.compare("lambo") == 0) {
-			// Lambo car
-			//glDisable(GL_CULL_FACE); 
-			glm::mat4 modelMatrixLamboBlend = glm::mat4(modelMatrixLambo);
-			modelMatrixLamboBlend[3][1] = terrain.getHeightTerrain(
-					modelMatrixLamboBlend[3][0], modelMatrixLamboBlend[3][2]);
-			modelMatrixLamboBlend = glm::scale(modelMatrixLamboBlend,
-					glm::vec3(1.3, 1.3, 1.3));
-			modelLambo.render(modelMatrixLamboBlend);
-			glActiveTexture(GL_TEXTURE0);
-			glm::mat4 modelMatrixLamboLeftDor = glm::mat4(
-					modelMatrixLamboBlend);
-			modelMatrixLamboLeftDor = glm::translate(modelMatrixLamboLeftDor,
-					glm::vec3(1.08676, 0.707316, 0.982601));
-			modelMatrixLamboLeftDor = glm::rotate(modelMatrixLamboLeftDor,
-					glm::radians(dorRotCount), glm::vec3(1.0, 0, 0));
-			modelMatrixLamboLeftDor = glm::translate(modelMatrixLamboLeftDor,
-					glm::vec3(-1.08676, -0.707316, -0.982601));
-			modelLamboLeftDor.render(modelMatrixLamboLeftDor);
-			modelLamboRightDor.render(modelMatrixLamboBlend);
-			modelLamboFrontLeftWheel.render(modelMatrixLamboBlend);
-			modelLamboFrontRightWheel.render(modelMatrixLamboBlend);
-			modelLamboRearLeftWheel.render(modelMatrixLamboBlend);
-			modelLamboRearRightWheel.render(modelMatrixLamboBlend);
-			// Se regresa el cull faces IMPORTANTE para las puertas
-			//glEnable(GL_CULL_FACE);
-		} else if (it->second.first.compare("heli") == 0) {
-			// Helicopter
-			glm::mat4 modelMatrixHeliChasis = glm::mat4(modelMatrixHeli);
-			modelHeliChasis.render(modelMatrixHeliChasis);
-
-			glm::mat4 modelMatrixHeliHeli = glm::mat4(modelMatrixHeliChasis);
-			modelMatrixHeliHeli = glm::translate(modelMatrixHeliHeli,
-					glm::vec3(0.0, 0.0, -0.249548));
-			modelMatrixHeliHeli = glm::rotate(modelMatrixHeliHeli, rotHelHelY,
-					glm::vec3(0, 1, 0));
-			modelMatrixHeliHeli = glm::translate(modelMatrixHeliHeli,
-					glm::vec3(0.0, 0.0, 0.249548));
-			modelHeliHeli.render(modelMatrixHeliHeli);
-
-		} else if (renderParticles
+		if (renderParticles
 				&& it->second.first.compare("fountain") == 0) {
 			/**********
 			 * Init Render particles systems
