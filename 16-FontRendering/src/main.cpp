@@ -265,8 +265,8 @@ GLuint depthMap, depthMapFBO;
  */
 
 // OpenAL Defines
-#define NUM_BUFFERS 3
-#define NUM_SOURCES 3
+#define NUM_BUFFERS 7
+#define NUM_SOURCES 7
 #define NUM_ENVIRONMENTS 1
 // Listener
 ALfloat listenerPos[] = { 0.0, 0.0, 4.0 };
@@ -281,6 +281,12 @@ ALfloat source1Vel[] = { 0.0, 0.0, 0.0 };
 // Source 2
 ALfloat source2Pos[] = { 2.0, 0.0, 0.0 };
 ALfloat source2Vel[] = { 0.0, 0.0, 0.0 };
+// Source 3
+ALfloat source3Pos[] = { 2.0, 0.0, 0.0 };
+ALfloat source3Vel[] = { 0.0, 0.0, 0.0 };
+// Source 4
+ALfloat source4Pos[] = { 2.0, 0.0, 0.0 };
+ALfloat source4Vel[] = { 0.0, 0.0, 0.0 };
 // Buffers
 ALuint buffer[NUM_BUFFERS];
 ALuint source[NUM_SOURCES];
@@ -291,7 +297,7 @@ ALenum format;
 ALvoid *data;
 int ch;
 ALboolean loop;
-std::vector<bool> sourcesPlay = { true, true, true };
+std::vector<bool> sourcesPlay = { true, true, false, false, false };
 
 // Se definen todos las funciones.
 void reshapeCallback(GLFWwindow *Window, int widthRes, int heightRes);
@@ -1114,6 +1120,8 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	buffer[0] = alutCreateBufferFromFile("../sounds/fountain.wav");
 	buffer[1] = alutCreateBufferFromFile("../sounds/fire.wav");
 	buffer[2] = alutCreateBufferFromFile("../sounds/moneda.wav");
+	buffer[3] = alutCreateBufferFromFile("../sounds/mario_oh.wav");
+	buffer[4] = alutCreateBufferFromFile("../sounds/mario_salta.wav");
 	int errorAlut = alutGetError();
 	if (errorAlut != ALUT_ERROR_NO_ERROR) {
 		printf("- Error open files with alut %d !!\n", errorAlut);
@@ -1146,6 +1154,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	alSourcei(source[1], AL_LOOPING, AL_TRUE);
 	alSourcef(source[1], AL_MAX_DISTANCE, 2000); //humbral
 
+	//moneda
 	alSourcef(source[2], AL_PITCH, 1.0f);
 	alSourcef(source[2], AL_GAIN, 1.0f);
 	alSourcefv(source[2], AL_POSITION, source2Pos);
@@ -1153,6 +1162,25 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	alSourcei(source[2], AL_BUFFER, buffer[2]);
 	alSourcei(source[2], AL_LOOPING, AL_FALSE);
 	alSourcef(source[2], AL_MAX_DISTANCE, 500);
+
+	//daño
+	alSourcef(source[3], AL_PITCH, 1.0f);
+	alSourcef(source[3], AL_GAIN, 1.0f);
+	alSourcefv(source[3], AL_POSITION, source3Pos);
+	alSourcefv(source[3], AL_VELOCITY, source3Vel);
+	alSourcei(source[3], AL_BUFFER, buffer[3]);
+	alSourcei(source[3], AL_LOOPING, AL_FALSE);
+	alSourcef(source[3], AL_MAX_DISTANCE, 500);
+
+	//salto
+	alSourcef(source[4], AL_PITCH, 1.0f);
+	alSourcef(source[4], AL_GAIN, 1.0f);
+	alSourcefv(source[4], AL_POSITION, source4Pos);
+	alSourcefv(source[4], AL_VELOCITY, source4Vel);
+	alSourcei(source[4], AL_BUFFER, buffer[4]);
+	alSourcei(source[4], AL_LOOPING, AL_FALSE);
+	alSourcef(source[4], AL_MAX_DISTANCE, 500);
+
 
 	// Se inicializa el modelo de texeles.
 	modelText = new FontTypeRendering::FontTypeRendering(screenWidth,
@@ -1385,6 +1413,7 @@ bool processInput(bool continueApplication) {
 		isJump = true;
 		startTimeJump = currTime;
 		tmv = 0;
+		sourcesPlay[4] = true;
 	}
 
 	glfwPollEvents();
@@ -2179,16 +2208,32 @@ void applicationLoop() {
 					addOrUpdateCollisionDetection(collisionDetection, jt->first,
 							isCollision);
 					if (it->first.find("enemy") != std::string::npos) {
+
+
 						std::string pos = it->first.substr(5, 1);
 						//std::cout << "The enemy" << pos << std::endl;
 						enemyRender[std::stoi(pos)] = false;
 						contador_damage--;
+						int a = std::stoi(pos);
+						source3Pos[0] = enemyPosition[a].x;
+						source3Pos[1] = enemyPosition[a].y;
+						source3Pos[2] = enemyPosition[a].z;
+						alSourcefv(source[3], AL_POSITION, source3Pos);
+						sourcesPlay[3] = true;
 					}
 					if (it->first.find("enemx") != std::string::npos) {
+
+
 						std::string pos = it->first.substr(5, 1);
 						//std::cout << "The enemy" << pos << std::endl;
 						enemyRender2[std::stoi(pos)] = false;
 						contador_damage--;
+						int a = std::stoi(pos);
+						source3Pos[0] = enemyPosition2[a].x;
+						source3Pos[1] = enemyPosition2[a].y;
+						source3Pos[2] = enemyPosition2[a].z;
+						alSourcefv(source[3], AL_POSITION, source3Pos);
+						sourcesPlay[3] = true;
 					}
 				}
 			}
@@ -2228,6 +2273,7 @@ void applicationLoop() {
 						source2Pos[2] = monedaPosition[a].z;
 						alSourcefv(source[2], AL_POSITION, source2Pos);
 						sourcesPlay[2] = true;
+
 					}
 					
 					
@@ -2307,12 +2353,12 @@ void applicationLoop() {
 		source0Pos[1] = modelMatrixFountain[3].y;
 		source0Pos[2] = modelMatrixFountain[3].z;
 		alSourcefv(source[0], AL_POSITION, source0Pos);
-		/*for (int i = 0; i < estrellaPosition.size(); i++) {
-			source2Pos[0] = monedaPosition[i].x;
-			source2Pos[1] = monedaPosition[i].y;
-			source2Pos[2] = monedaPosition[i].z;
-			alSourcefv(source[2], AL_POSITION, source2Pos);
-		}*/
+
+		source4Pos[0] = modelMatrixMayow[3].x;
+		source4Pos[1] = modelMatrixMayow[3].y;
+		source4Pos[2] = modelMatrixMayow[3].z;
+		alSourcefv(source[4], AL_POSITION, source4Pos);
+
 
 
 		// Listener for the Thris person camera
@@ -2320,6 +2366,9 @@ void applicationLoop() {
 		listenerPos[1] = modelMatrixMayow[3].y;
 		listenerPos[2] = modelMatrixMayow[3].z;
 		alListenerfv(AL_POSITION, listenerPos);
+
+
+
 
 		glm::vec3 upModel = glm::normalize(modelMatrixMayow[1]);
 		glm::vec3 frontModel = glm::normalize(modelMatrixMayow[2]);
