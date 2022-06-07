@@ -2340,8 +2340,8 @@ void applicationLoop() {
 
 
 
-		modelText->render("Puntuacion " + std::to_string(contador_txt), -1, 0);
-		damageText->render("Vida restante: " + std::to_string(contador_damage), -1, 0.8);
+		modelText->render("Puntuacion " + std::to_string(contador_txt), -1, 0.0,24,1.0,1.0,1.0);
+		damageText->render("Vida restante: " + std::to_string(contador_damage), -1, 0.8,24,1.0,1.0,1.0);
 		glfwSwapBuffers(window);
 
 		/*
