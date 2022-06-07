@@ -110,6 +110,9 @@ Model modelLamp1;
 Model modelLamp2;
 Model modelLampPost2;
 
+//estrellas
+Model modelEstrella;
+
 //monedas
 Model modelMoneda;
 
@@ -193,6 +196,14 @@ std::vector<float> lamp1Orientation = { -17.0, -82.67, 23.70 };
 std::vector<glm::vec3> lamp2Position = { glm::vec3(-36.52, 0, -23.24),
 		glm::vec3(-52.73, 0, -3.90) };
 std::vector<float> lamp2Orientation = { 21.37 + 90, -65.0 + 90 };
+
+//Estrellas posicion
+
+std::vector<glm::vec3> estrellaPosition = { glm::vec3(-7.03, 0, -16.14), glm::vec3(
+		24.41, 0, -32.57), glm::vec3(-10.15, 0, -52.10) };
+std::vector<float> estrellaOrientation = { 21.37 + 90, -65.0 + 90 };
+
+
 
 // monedas positions
 std::vector<glm::vec3> monedaPosition = { glm::vec3(0, 0, -19.14), glm::vec3(
@@ -589,6 +600,10 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelLamp2.setShader(&shaderMulLighting);
 	modelLampPost2.loadModel("../models/Street_Light/LampPost.obj");
 	modelLampPost2.setShader(&shaderMulLighting);
+
+	//estrella models
+	modelEstrella.loadModel("../models/estrella/estrella.fbx");
+	modelEstrella.setShader(&shaderMulLighting);
 
 	//moneda
 	modelMoneda.loadModel("../models/moneda/moneda.fbx");
@@ -1181,6 +1196,9 @@ void destroy() {
 	modelLamp1.destroy();
 	modelLamp2.destroy();
 	modelLampPost2.destroy();
+	//estrellas
+	modelEstrella.destroy();
+	//monedas
 	modelMoneda.destroy();
 	modelGrass.destroy();
 	modelFountain.destroy();
@@ -1522,9 +1540,9 @@ void applicationLoop() {
 		shaderMulLighting.setVectorFloat3("viewPos",
 				glm::value_ptr(camera->getPosition()));
 		shaderMulLighting.setVectorFloat3("directionalLight.light.ambient",
-				glm::value_ptr(glm::vec3(0.2, 0.2, 0.2)));
+				glm::value_ptr(glm::vec3(0.3, 0.3, 0.3)));
 		shaderMulLighting.setVectorFloat3("directionalLight.light.diffuse",
-				glm::value_ptr(glm::vec3(0.5, 0.5, 0.5)));
+				glm::value_ptr(glm::vec3(0.3, 0.3, 0.3)));
 		shaderMulLighting.setVectorFloat3("directionalLight.light.specular",
 				glm::value_ptr(glm::vec3(0.2, 0.2, 0.2)));
 		shaderMulLighting.setVectorFloat3("directionalLight.direction",
@@ -1536,9 +1554,9 @@ void applicationLoop() {
 		shaderTerrain.setVectorFloat3("viewPos",
 				glm::value_ptr(camera->getPosition()));
 		shaderTerrain.setVectorFloat3("directionalLight.light.ambient",
-				glm::value_ptr(glm::vec3(0.2, 0.2, 0.2)));
+				glm::value_ptr(glm::vec3(0.3, 0.3, 0.3)));
 		shaderTerrain.setVectorFloat3("directionalLight.light.diffuse",
-				glm::value_ptr(glm::vec3(0.5, 0.5, 0.5)));
+				glm::value_ptr(glm::vec3(0.3, 0.3, 0.3)));
 		shaderTerrain.setVectorFloat3("directionalLight.light.specular",
 				glm::value_ptr(glm::vec3(0.2, 0.2, 0.2)));
 		shaderTerrain.setVectorFloat3("directionalLight.direction",
@@ -1593,6 +1611,8 @@ void applicationLoop() {
 				lamp1Position.size() + lamp2Orientation.size());
 		shaderTerrain.setInt("pointLightCount",
 				lamp1Position.size() + lamp2Orientation.size());
+
+
 		for (int i = 0; i < lamp1Position.size(); i++) {
 			glm::mat4 matrixAdjustLamp = glm::mat4(1.0f);
 			matrixAdjustLamp = glm::translate(matrixAdjustLamp,
@@ -1701,6 +1721,64 @@ void applicationLoop() {
 					"pointLights[" + std::to_string(lamp1Position.size() + i)
 							+ "].quadratic", 0.02);
 		}
+
+		//Propiedades de estrellas
+
+		shaderMulLighting.setInt("pointLightCount",
+			estrellaPosition.size() + estrellaOrientation.size());
+		shaderTerrain.setInt("pointLightCount",
+			estrellaPosition.size() + estrellaOrientation.size());
+
+
+		for (int i = 0; i < estrellaPosition.size(); i++) {
+			glm::mat4 matrixAdjustEstrella = glm::mat4(1.0f);
+			matrixAdjustEstrella = glm::translate(matrixAdjustEstrella,
+				estrellaPosition[i]);
+			matrixAdjustEstrella = glm::rotate(matrixAdjustEstrella,
+				glm::radians(estrellaOrientation[i]), glm::vec3(0, 1, 0));
+			matrixAdjustEstrella = glm::scale(matrixAdjustEstrella,
+				glm::vec3(0.5, 0.5, 0.5));
+			//matrixAdjustEstrella = glm::translate(matrixAdjustEstrella,
+				//glm::vec3(0, 10.3585, 0));
+			glm::vec3 estrellaPosition = glm::vec3(matrixAdjustEstrella[3]);
+			shaderMulLighting.setVectorFloat3(
+				"pointLights[" + std::to_string(i) + "].light.ambient",
+				glm::value_ptr(glm::vec3(0.3,0.7, 2)));
+			shaderMulLighting.setVectorFloat3(
+				"pointLights[" + std::to_string(i) + "].light.diffuse",
+				glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
+			shaderMulLighting.setVectorFloat3(
+				"pointLights[" + std::to_string(i) + "].light.specular",
+				glm::value_ptr(glm::vec3(1,1,1)));
+			shaderMulLighting.setVectorFloat3(
+				"pointLights[" + std::to_string(i) + "].position",
+				glm::value_ptr(estrellaPosition));
+			shaderMulLighting.setFloat(
+				"pointLights[" + std::to_string(i) + "].constant", 1.0);
+			shaderMulLighting.setFloat(
+				"pointLights[" + std::to_string(i) + "].linear", 0.9);
+			shaderMulLighting.setFloat(
+				"pointLights[" + std::to_string(i) + "].quadratic", 0.01);
+			shaderTerrain.setVectorFloat3(
+				"pointLights[" + std::to_string(i) + "].light.ambient",
+				glm::value_ptr(glm::vec3(0.3, 0.7, 2)));
+			shaderTerrain.setVectorFloat3(
+				"pointLights[" + std::to_string(i) + "].light.diffuse",
+				glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
+			shaderTerrain.setVectorFloat3(
+				"pointLights[" + std::to_string(i) + "].light.specular",
+				glm::value_ptr(glm::vec3(1,1,1)));
+			shaderTerrain.setVectorFloat3(
+				"pointLights[" + std::to_string(i) + "].position",
+				glm::value_ptr(estrellaPosition));
+			shaderTerrain.setFloat(
+				"pointLights[" + std::to_string(i) + "].constant", 1.0);
+			shaderTerrain.setFloat(
+				"pointLights[" + std::to_string(i) + "].linear", 0.9);
+			shaderTerrain.setFloat(
+				"pointLights[" + std::to_string(i) + "].quadratic", 0.01);
+		}
+
 
 
 
@@ -2252,6 +2330,9 @@ void prepareScene() {
 	modelLamp2.setShader(&shaderMulLighting);
 	modelLampPost2.setShader(&shaderMulLighting);
 
+	//estrellas
+	modelEstrella.setShader(&shaderMulLighting);
+
 	//monedas
 	modelMoneda.setShader(&shaderMulLighting);
 
@@ -2292,6 +2373,9 @@ void prepareDepthScene() {
 	modelLamp1.setShader(&shaderDepth);
 	modelLamp2.setShader(&shaderDepth);
 	modelLampPost2.setShader(&shaderDepth);
+
+	//estrellas
+	modelEstrella.setShader(&shaderDepth);
 
 	//Grass
 	modelGrass.setShader(&shaderDepth);
@@ -2367,6 +2451,19 @@ void renderScene(bool renderParticles) {
 		modelLampPost2.setOrientation(glm::vec3(0, lamp2Orientation[i], 0));
 		modelLampPost2.render();
 	}
+
+	// Render de estrellas
+	for (int i = 0; i < estrellaPosition.size(); i++) {
+		estrellaPosition[i].y = terrain.getHeightTerrain(estrellaPosition[i].x,
+			estrellaPosition[i].z)+4;
+		modelEstrella.setPosition(estrellaPosition[i]);
+		modelEstrella.setScale(glm::vec3(0.5, 0.5, 0.5));
+		modelEstrella.setOrientation(glm::vec3(0, estrellaOrientation[i], 0));
+		modelEstrella.render();
+	}
+
+
+
 
 	//Render monedas
 	for (int i = 0; i < monedaPosition.size(); i++) {
