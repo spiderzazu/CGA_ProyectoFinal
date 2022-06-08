@@ -35,7 +35,7 @@ vec3 randomInitialVelocity() {
 }
 
 vec3 randomInitialPosition() {
-    float offset = mix(-2.0, 2.0, texelFetch(RandomTex, 2 * gl_VertexID + 1, 0).r);
+    float offset = mix(-0.5, 0.5, texelFetch(RandomTex, 2 * gl_VertexID + 1, 0).r);
     return Emitter + vec3(offset, 0, 0);
 }
 

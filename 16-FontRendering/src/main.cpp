@@ -97,6 +97,7 @@ bool vivo = false;
 bool muestraFinal = false;
 bool principal = true;
 bool resultadoPartida = false;
+float dificultad = 0.1;
 
 //Control type
 int tipoControl = 0;
@@ -235,7 +236,7 @@ std::vector<glm::vec3> enemyPosition = {
 	glm::vec3(3.6,0,-99.4),
 	glm::vec3(-129,0,-28.5),
 	glm::vec3(39,0,22.5),
-	glm::vec3(0,0,0.5)
+	//glm::vec3(0,0,0.5)
 
 };
 std::vector<glm::vec3> enemyPosition2 = { 
@@ -247,7 +248,7 @@ std::vector<glm::vec3> enemyPosition2 = {
 	glm::vec3(4.1,0,-99.9),
 	glm::vec3(-128.5,0,-29),
 	glm::vec3(39.5,0,22),
-	glm::vec3(0.5,0,0),
+	//glm::vec3(0.5,0,0),
 
 
 };
@@ -261,7 +262,7 @@ std::vector<glm::vec3> enemyPosition3 = {
 	glm::vec3(3.6,0,-100.4),
 	glm::vec3(-129,0,-29.5),
 	glm::vec3(39,0,21.5),
-	glm::vec3(0,0,-0.5)
+	//glm::vec3(0,0,-0.5)
 
 };
 
@@ -274,16 +275,20 @@ std::vector<glm::vec3> enemyPosition4 = {
 	glm::vec3(3.1,0,-99.9),
 	glm::vec3(-129.5,0,-29),
 	glm::vec3(38.5,0,22),
-	glm::vec3(-0.5,0,0)
+	//glm::vec3(-0.5,0,0)
 
 };
 
 
 // Enemy renders
-bool enemyRender[9] = { true, true, true,true, true, true,true, true, true};
-bool enemyRender2[9] = { true, true, true,true, true, true,true, true, true};
-bool enemyRender3[9] = { true, true, true,true, true, true,true, true, true };
-bool enemyRender4[9] = { true, true, true,true, true, true,true, true, true};
+//bool enemyRender[9] = { true, true, true,true, true, true,true, true, true};
+//bool enemyRender2[9] = { true, true, true,true, true, true,true, true, true};
+//bool enemyRender3[9] = { true, true, true,true, true, true,true, true, true };
+//bool enemyRender4[9] = { true, true, true,true, true, true,true, true, true};
+bool enemyRender[8] = { true, true, true,true, true, true,true, true };
+bool enemyRender2[8] = { true, true, true,true, true, true,true, true};
+bool enemyRender3[8] = { true, true, true,true, true, true,true, true };
+bool enemyRender4[8] = { true, true, true,true, true, true,true, true };
 
 //Arbol position
 std::vector<glm::vec3> arbolPosition = { 
@@ -337,7 +342,7 @@ std::vector<glm::vec3> trineoPosition = {
 };
 
 // Blending model unsorted
-std::map<std::string, glm::vec3> blendingUnsorted = { { "fountain", glm::vec3(5.0, 0.0, -40.0) }, { "fire", glm::vec3(0.0, 0.0, 7.0) } };
+std::map<std::string, glm::vec3> blendingUnsorted = { { "fountain", glm::vec3(5.0, 0.0, -40.0) }, { "fire", glm::vec3(0.0, 0.0, 0.0) } };
 
 double deltaTime;
 double currTime, lastTime;
@@ -1456,6 +1461,8 @@ void resetGame() {
 		glm::vec3(13.0f, 0.05f, -5.0f));
 	modelMatrixMario = glm::rotate(modelMatrixMario, glm::radians(-90.0f),
 		glm::vec3(0, 1, 0));
+	camera->setPosition(glm::vec3(0.0, 0.0, 10.0));
+	camera->setDistanceFromTarget(7);
 	//enemyRender2
 	//monedasRender
 }
@@ -1591,6 +1598,7 @@ void applicationLoop() {
 		shaderParticlesFire.setMatrix4("projection", 1, false,
 				glm::value_ptr(projection));
 		shaderParticlesFire.setMatrix4("view", 1, false, glm::value_ptr(view));
+		shaderParticlesFire.setVectorFloat3("colorHumo", glm::value_ptr(glm::vec3(1, 1, 1)));
 
 		/*******************************************
 		 * Propiedades de neblina
@@ -2095,6 +2103,7 @@ void applicationLoop() {
 						source3Pos[2] = enemyPosition[a].z;
 						alSourcefv(source[3], AL_POSITION, source3Pos);
 						sourcesPlay[3] = true;
+				
 					}
 					if (it->first.find("enemx") != std::string::npos) {
 
@@ -2173,6 +2182,7 @@ void applicationLoop() {
 						monedasRender[std::stoi(pos)] = false;	
 						contador_txt++;
 						sourcesPlay[2] = true;
+						dificultad += 0.02;
 
 					}
 
@@ -2183,10 +2193,10 @@ void applicationLoop() {
 			}
 		}
 
+		//coordenadas
 
-
-	/*	std::cout << "x" << modelMatrixMario[3].x << std::endl;
-		std::cout << "z" << modelMatrixMario[3].z << std::endl;*/
+		std::cout << "x" << modelMatrixMario[3].x << std::endl;
+		std::cout << "z" << modelMatrixMario[3].z << std::endl;
 			
 		
 
@@ -2205,7 +2215,7 @@ void applicationLoop() {
 
 		switch (stateEnemy) {
 		case 0:
-			EnemySteep += 0.16;
+			EnemySteep +=dificultad;
 			//std::cout << "Posicion " << EnemySteep << std::endl;
 			//std::cout << "Estado " << stateEnemy << std::endl;
 			if (EnemySteep > 5) {
@@ -2213,7 +2223,7 @@ void applicationLoop() {
 			}
 			break;
 		case 1:
-			EnemySteep -= 0.16;
+			EnemySteep -= dificultad;
 			//std::cout << "Posicion " << EnemySteep << std::endl;
 			//std::cout << "Estado " << stateEnemy << std::endl;
 			if (EnemySteep < 0) {
@@ -2225,38 +2235,47 @@ void applicationLoop() {
 
 
 		if (!vivo && principal) { //Inicia el juego y muestra menu principal
-			menuP->render("Enter para iniciar el juego o Esc para salir", -1.0, -0.5, 22, 1.0, 1.0, 1.0);
-			menuP2->render("Presiona 0 para control de Play o 1 para control de Xbox", -1.0, -0.8, 22, 1.0, 1.0, 1.0);
+			menuP->render("Mision", -0.25, 0.7, 48,0.77,0.31,0.09);
+			menuP->render("Encuentra las 9 monedas", -0.75, 0.25, 36, 0.77, 0.31, 0.09);
+
+			menuP->render("Enter para iniciar el juego o Esc para salir", -0.75, -0.3, 22, 0.21, 0.39, 0.81);
+			menuP2->render("Presiona", -0.75, -0.5, 22, 0.21, 0.39, 0.81);
+			menuP2->render("0 para control de Play", -0.75, -0.6, 22, 0.21, 0.39, 0.81);
+			menuP2->render("1 para control de Xbox", -0.75, -0.7, 22, 0.21, 0.39, 0.81);
+
+
+			//menuP2->render("Mision: Encuentra las 9 monedas", -1.0, -0.8, 22, 1.0, 1.0, 1.0);
+			//control de Play  1 para control de Xbox
 		}
 		else if (!vivo && !principal) {
 			if (resultadoPartida) {
-				damageText->render("Ganaste", 0.0, 0.0, 22, 1.0, 1.0, 1.0);
-				menuP->render("Enter para jugar de nuevo o Esc para salir", -1.0, -0.5, 22, 1.0, 1.0, 1.0);
+				damageText->render("**Ganaste**", -0.4, 0.0, 60, 0.28, 0.91,0.09);
+				menuP->render("Enter para jugar de nuevo o Esc para salir", -0.75, -0.5, 22, 0.38, 0.76, 0.9);
 			}
 			else {
-				damageText->render("Perdiste", 0.0, 0.0, 22, 1.0, 1.0, 1.0);
-				menuP->render("Enter para intentar de nuevo o Esc para salir", -1.0, -0.5, 22, 1.0, 1.0, 1.0);
+				damageText->render("**Perdiste**", -0.4, 0.0, 60, 0.77, 0.31, 0.09);
+				menuP->render("Enter para jugar de nuevo o Esc para salir", -0.75, -0.5, 22, 0.38, 0.76, 0.9);
 			}
 		} else {
 			principal = false;
 			if (contador_damage > 0) {
-				modelText->render("Puntuacion " + std::to_string(contador_txt), -1, 0.0, 22, 1.0, 1.0, 1.0);
-				damageText->render("Vida restante: " + std::to_string(contador_damage), -1, 0.8, 22, 1.0, 1.0, 1.0);
+				modelText->render("Monedas " + std::to_string(contador_txt), -0.2, 0.8, 22, 0.28, 0.91, 0.09);
+				damageText->render("Vidas: " + std::to_string(contador_damage), -1, 0.8, 22, 0.77, 0.31, 0.09);
 			}
 			if (contador_damage <= 0) {
 				muestraFinal = true;
 				resultadoPartida = false;
-				damageText->render("Perdiste", 0.0, 0.0, 22, 1.0, 1.0, 1.0);
-				//menuP->render("Presiona Enter para intentarlo de nuevo o Esc para salir", -0.8, -0.5, 24, 1.0, 1.0, 1.0);
+				damageText->render("**Perdiste**", -0.4, 0.0, 60, 0.77, 0.31, 0.09);
+				//menuP->render("Enter para jugar de nuevo o Esc para salir", -0.75, -0.5, 22, 0.38, 0.76, 0.9);
 				vivo = false; //Bloquea controles
 				resetGame();
 			}
-			if (contador_txt >= 7) {
+			if (contador_txt >= 9) {
 				muestraFinal = true;
 				resultadoPartida = true;
 				vivo = false; //Bloquea controles
-				//menuP->render("Presiona Enter para intentar ganar de nuevo o Esc para salir", -0.8, -0.5, 24, 1.0, 1.0, 1.0);
-				damageText->render("Ganaste", 0.0, 0.0, 22, 1.0, 1.0, 1.0);
+				damageText->render("**Ganaste**", -0.3, 0.0, 60, 0.28, 0.91, 0.09);
+				//menuP->render("Enter para jugar de nuevo o Esc para salir", -0.75, -0.5, 22, 0.38, 0.76, 0.9);
 				resetGame();
 			}
 		}
