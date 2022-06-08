@@ -124,6 +124,9 @@ Model modelMoneda;
 Model modelGrass;
 // Fountain
 Model modelFountain;
+
+//Menu
+Model menuImage;
 // Model animate instance
 // 
 // Mario
@@ -152,12 +155,12 @@ GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
 GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
 GL_TEXTURE_CUBE_MAP_NEGATIVE_Z };
 
-std::string fileNames[6] = { "../Textures/mp_bloodvalley/a_rt.tga",
-		"../Textures/mp_bloodvalley/a_lf.tga",
-		"../Textures/mp_bloodvalley/a_up.tga",
-		"../Textures/mp_bloodvalley/a_dn.tga",
-		"../Textures/mp_bloodvalley/a_ft.tga",
-		"../Textures/mp_bloodvalley/a_bk.tga" };
+std::string fileNames[6] = { "../Textures/mp_frost/a_rt.tga",
+		"../Textures/mp_frost/a_lf.tga",
+		"../Textures/mp_frost/a_up.tga",
+		"../Textures/mp_frost/a_dn.tga",
+		"../Textures/mp_frost/a_ft.tga",
+		"../Textures/mp_frost/a_bk.tga" };
 
 bool exitApp = false;
 int lastMousePosX, offsetX = 0;
@@ -170,6 +173,7 @@ glm::mat4 modelMatrixFountain = glm::mat4(1.0f);
 glm::mat4 modelMatrixArbol = glm::mat4(1.0);
 glm::mat4 modelMatrixSnowman = glm::mat4(1.0);
 glm::mat4 modelMatrixTrineo = glm::mat4(1.0);
+glm::mat4 modelMatrixMenu = glm::mat4(1.0);
 
 int animationIndex = 2;
 int modelSelected = 2;
@@ -707,6 +711,10 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	marioModelAnimate.loadModel("../models/mario/marioAnimate2.fbx");
 	marioModelAnimate.setShader(&shaderMulLighting);
 
+	//Menu
+	menuImage.loadModel("../models/menu/menu.fbx");
+	menuImage.setShader(&shaderMulLighting);
+
 	camera->setPosition(glm::vec3(0.0, 0.0, 10.0));
 	camera->setDistanceFromTarget(distanceFromTarget);
 	camera->setSensitivity(1.0);
@@ -739,165 +747,6 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 			std::cout << "Failed to load texture" << std::endl;
 		skyboxTexture.freeImage(bitmap);
 	}
-
-	// Definiendo la textura a utilizar
-	Texture textureCesped("../Textures/cesped.jpg");
-	// Carga el mapa de bits (FIBITMAP es el tipo de dato de la libreria)
-	bitmap = textureCesped.loadImage();
-	// Convertimos el mapa de bits en un arreglo unidimensional de tipo unsigned char
-	data = textureCesped.convertToData(bitmap, imageWidth, imageHeight);
-	// Creando la textura con id 1
-	glGenTextures(1, &textureCespedID);
-	// Enlazar esa textura a una tipo de textura de 2D.
-	glBindTexture(GL_TEXTURE_2D, textureCespedID);
-	// set the texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-	// set texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// Verifica si se pudo abrir la textura
-	if (data) {
-		// Transferis los datos de la imagen a memoria
-		// Tipo de textura, Mipmaps, Formato interno de openGL, ancho, alto, Mipmaps,
-		// Formato interno de la libreria de la imagen, el tipo de dato y al apuntador
-		// a los datos
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
-		GL_BGRA, GL_UNSIGNED_BYTE, data);
-		// Generan los niveles del mipmap (OpenGL es el ecargado de realizarlos)
-		glGenerateMipmap(GL_TEXTURE_2D);
-	} else
-		std::cout << "Failed to load texture" << std::endl;
-	// Libera la memoria de la textura
-	textureCesped.freeImage(bitmap);
-
-	// Definiendo la textura a utilizar
-	Texture textureWall("../Textures/whiteWall.jpg");
-	// Carga el mapa de bits (FIBITMAP es el tipo de dato de la libreria)
-	bitmap = textureWall.loadImage();
-	// Convertimos el mapa de bits en un arreglo unidimensional de tipo unsigned char
-	data = textureWall.convertToData(bitmap, imageWidth, imageHeight);
-	// Creando la textura con id 1
-	glGenTextures(1, &textureWallID);
-	// Enlazar esa textura a una tipo de textura de 2D.
-	glBindTexture(GL_TEXTURE_2D, textureWallID);
-	// set the texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// set texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// Verifica si se pudo abrir la textura
-	if (data) {
-		// Transferis los datos de la imagen a memoria
-		// Tipo de textura, Mipmaps, Formato interno de openGL, ancho, alto, Mipmaps,
-		// Formato interno de la libreria de la imagen, el tipo de dato y al apuntador
-		// a los datos
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
-		GL_BGRA, GL_UNSIGNED_BYTE, data);
-		// Generan los niveles del mipmap (OpenGL es el ecargado de realizarlos)
-		glGenerateMipmap(GL_TEXTURE_2D);
-	} else
-		std::cout << "Failed to load texture" << std::endl;
-	// Libera la memoria de la textura
-	textureWall.freeImage(bitmap);
-
-	// Definiendo la textura a utilizar
-	Texture textureWindow("../Textures/ventana.png");
-	// Carga el mapa de bits (FIBITMAP es el tipo de dato de la libreria)
-	bitmap = textureWindow.loadImage();
-	// Convertimos el mapa de bits en un arreglo unidimensional de tipo unsigned char
-	data = textureWindow.convertToData(bitmap, imageWidth, imageHeight);
-	// Creando la textura con id 1
-	glGenTextures(1, &textureWindowID);
-	// Enlazar esa textura a una tipo de textura de 2D.
-	glBindTexture(GL_TEXTURE_2D, textureWindowID);
-	// set the texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// set texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// Verifica si se pudo abrir la textura
-	if (data) {
-		// Transferis los datos de la imagen a memoria
-		// Tipo de textura, Mipmaps, Formato interno de openGL, ancho, alto, Mipmaps,
-		// Formato interno de la libreria de la imagen, el tipo de dato y al apuntador
-		// a los datos
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
-		GL_BGRA, GL_UNSIGNED_BYTE, data);
-		// Generan los niveles del mipmap (OpenGL es el ecargado de realizarlos)
-		glGenerateMipmap(GL_TEXTURE_2D);
-	} else
-		std::cout << "Failed to load texture" << std::endl;
-	// Libera la memoria de la textura
-	textureWindow.freeImage(bitmap);
-
-	// Definiendo la textura a utilizar
-	Texture textureHighway("../Textures/highway.jpg");
-	// Carga el mapa de bits (FIBITMAP es el tipo de dato de la libreria)
-	bitmap = textureHighway.loadImage();
-	// Convertimos el mapa de bits en un arreglo unidimensional de tipo unsigned char
-	data = textureHighway.convertToData(bitmap, imageWidth, imageHeight);
-	// Creando la textura con id 1
-	glGenTextures(1, &textureHighwayID);
-	// Enlazar esa textura a una tipo de textura de 2D.
-	glBindTexture(GL_TEXTURE_2D, textureHighwayID);
-	// set the texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// set texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// Verifica si se pudo abrir la textura
-	if (data) {
-		// Transferis los datos de la imagen a memoria
-		// Tipo de textura, Mipmaps, Formato interno de openGL, ancho, alto, Mipmaps,
-		// Formato interno de la libreria de la imagen, el tipo de dato y al apuntador
-		// a los datos
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
-		GL_BGRA, GL_UNSIGNED_BYTE, data);
-		// Generan los niveles del mipmap (OpenGL es el ecargado de realizarlos)
-		glGenerateMipmap(GL_TEXTURE_2D);
-	} else
-		std::cout << "Failed to load texture" << std::endl;
-	// Libera la memoria de la textura
-	textureHighway.freeImage(bitmap);
-
-	// Definiendo la textura a utilizar
-	Texture textureLandingPad("../Textures/landingPad.jpg");
-	// Carga el mapa de bits (FIBITMAP es el tipo de dato de la libreria)
-	bitmap = textureLandingPad.loadImage();
-	// Convertimos el mapa de bits en un arreglo unidimensional de tipo unsigned char
-	data = textureLandingPad.convertToData(bitmap, imageWidth, imageHeight);
-	// Creando la textura con id 1
-	glGenTextures(1, &textureLandingPadID);
-	// Enlazar esa textura a una tipo de textura de 2D.
-	glBindTexture(GL_TEXTURE_2D, textureLandingPadID);
-	// set the texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// set texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// Verifica si se pudo abrir la textura
-	if (data) {
-		// Transferis los datos de la imagen a memoria
-		// Tipo de textura, Mipmaps, Formato interno de openGL, ancho, alto, Mipmaps,
-		// Formato interno de la libreria de la imagen, el tipo de dato y al apuntador
-		// a los datos
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
-		GL_BGRA, GL_UNSIGNED_BYTE, data);
-		// Generan los niveles del mipmap (OpenGL es el ecargado de realizarlos)
-		glGenerateMipmap(GL_TEXTURE_2D);
-	} else
-		std::cout << "Failed to load texture" << std::endl;
-	// Libera la memoria de la textura
-	textureLandingPad.freeImage(bitmap);
-
-
-
-
 
 	// Definiendo la textura a utilizar
 	Texture textureTerrainBackground("../Textures/nieve2.jpg");
@@ -1308,6 +1157,8 @@ void destroy() {
 	modelMoneda.destroy();
 	modelGrass.destroy();
 	modelFountain.destroy();
+	menuImage.destroy();
+
 
 	// Custom objects animate
 	marioModelAnimate.destroy();
@@ -1421,7 +1272,7 @@ bool processInput(bool continueApplication) {
 			if (tipoControl == 0) {
 				if (fabs(axes[1]) > 0.2) {
 					modelMatrixMario = glm::translate(modelMatrixMario,
-						glm::vec3(0, 0, -axes[1] * 0.1));
+						glm::vec3(0, 0, -axes[1] * 0.3));
 					if (!isJump)
 						animationIndex = 1;
 					else {
@@ -1430,7 +1281,7 @@ bool processInput(bool continueApplication) {
 				}
 				if (fabs(axes[0]) > 0.2) {
 					modelMatrixMario = glm::rotate(modelMatrixMario,
-						glm::radians(-axes[0] * 0.5f), glm::vec3(0, 1, 0));
+						glm::radians(-axes[0] * 1.0f), glm::vec3(0, 1, 0));
 					if (!isJump)
 						animationIndex = 1;
 					else {
@@ -1460,14 +1311,14 @@ bool processInput(bool continueApplication) {
 			}
 			if (tipoControl == 1) {
 				if (fabs(abs(axes[1]) > 0.2)) {
-					modelMatrixMario = glm::translate(modelMatrixMario, glm::vec3(0, 0, axes[1] * 0.1));
+					modelMatrixMario = glm::translate(modelMatrixMario, glm::vec3(0, 0, axes[1] * 0.3));
 					if (!isJump)
 						animationIndex = 1;
 					else
 						animationIndex = 0;
 				}
 				if (fabs(axes[0]) > 0.2) {
-					modelMatrixMario = glm::rotate(modelMatrixMario, glm::radians(-axes[0] * 0.5f), glm::vec3(0, 1, 0));
+					modelMatrixMario = glm::rotate(modelMatrixMario, glm::radians(-axes[0] * 1.0f), glm::vec3(0, 1, 0));
 					if (!isJump)
 						animationIndex = 1;
 					else
@@ -1527,7 +1378,7 @@ bool processInput(bool continueApplication) {
 		}
 		if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
 			modelMatrixMario = glm::translate(modelMatrixMario,
-				glm::vec3(0, 0, 0.15));
+				glm::vec3(0, 0, 0.3));
 			if (!isJump)
 				animationIndex = 1;
 			else
@@ -1536,7 +1387,7 @@ bool processInput(bool continueApplication) {
 		else if (modelSelected
 			== 2 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
 			modelMatrixMario = glm::translate(modelMatrixMario,
-				glm::vec3(0, 0, -0.15));
+				glm::vec3(0, 0, -0.3));
 			if (!isJump)
 				animationIndex = 1;
 			else
@@ -1631,6 +1482,13 @@ void applicationLoop() {
 			modelMatrixFountain[3][0], modelMatrixFountain[3][2]) + 0.2;
 	modelMatrixFountain = glm::scale(modelMatrixFountain,
 			glm::vec3(10.0f, 10.0f, 10.0f));
+
+	modelMatrixMenu = glm::translate(glm::mat4(1.0f), glm::vec3(16.0f, 0.05f, -5.0f));
+	modelMatrixMenu = glm::rotate(modelMatrixMenu, glm::radians(90.0f), glm::vec3(0, 1, 0));
+	modelMatrixMenu = glm::rotate(modelMatrixMenu, glm::radians(-35.0f), glm::vec3(1, 0, 0));
+	modelMatrixMenu = glm::scale(modelMatrixMenu, glm::vec3(5.0, 3.0, 3.0));
+	modelMatrixMenu[3][1] = terrain.getHeightTerrain(modelMatrixMenu[3][0], modelMatrixMenu[3][2]) + 1.5f;
+
 
 	lastTime = TimeManager::Instance().GetTime();
 
@@ -2116,20 +1974,6 @@ void applicationLoop() {
 			std::get<0>(collidersOBB.find("snowman" + std::to_string(i))->second) = snowmanCollider;
 		}
 
-
-		//Collider del enemigo/*
-		//Single enemy
-		/*AbstractModel::SBB enemyCollider;
-		glm::mat4 modelMatrixColliderEnemy = glm::mat4(modelMatrixEnemy);
-		modelMatrixColliderEnemy = glm::translate(modelMatrixColliderEnemy, glm::vec3(
-			modelEnemy.getSbb().c.x,
-			modelEnemy.getSbb().c.y,
-			modelEnemy.getSbb().c.z + EnemySteep));
-		enemyCollider.c = glm::vec3(modelMatrixColliderEnemy[3]);
-		enemyCollider.ratio = modelEnemy.getSbb().ratio * 0.5;
-		addOrUpdateColliders(collidersSBB, "enemy", enemyCollider,
-			modelMatrixEnemy);*/
-
 		// Collider de Mario
 		AbstractModel::OBB marioCollider;
 		glm::mat4 modelmatrixColliderMario = glm::mat4(modelMatrixMario);
@@ -2154,7 +1998,7 @@ void applicationLoop() {
 		/*******************************************
 		 * Render de colliders
 		 *******************************************/
-		for (std::map<std::string,
+		/*for (std::map<std::string,
 				std::tuple<AbstractModel::OBB, glm::mat4, glm::mat4> >::iterator it =
 				collidersOBB.begin(); it != collidersOBB.end(); it++) {
 			glm::mat4 matrixCollider = glm::mat4(1.0);
@@ -2180,7 +2024,7 @@ void applicationLoop() {
 			sphereCollider.setColor(glm::vec4(1.0, 1.0, 1.0, 1.0));
 			sphereCollider.enableWireMode();
 			sphereCollider.render(matrixCollider);
-		}
+		}*/
 
 		/*******************************************
 		 * Test Colisions
@@ -2321,7 +2165,7 @@ void applicationLoop() {
 						modelMatrixMario = std::get<1>(jt->second);
 					}
 						
-					std::cout << "000000000000000000000000000" << std::endl;
+					//std::cout << "000000000000000000000000000" << std::endl;
 					if (jt->first.find("moneda") != std::string::npos) {
 						std::string pos = jt->first.substr(6, 1);
 						std::cout << "Posicion" << pos << std::endl;
@@ -2341,8 +2185,8 @@ void applicationLoop() {
 
 
 
-		std::cout << "x" << modelMatrixMario[3].x << std::endl;
-		std::cout << "z" << modelMatrixMario[3].z << std::endl;
+	/*	std::cout << "x" << modelMatrixMario[3].x << std::endl;
+		std::cout << "z" << modelMatrixMario[3].z << std::endl;*/
 			
 		
 
@@ -2407,7 +2251,7 @@ void applicationLoop() {
 				vivo = false; //Bloquea controles
 				resetGame();
 			}
-			if (contador_txt >= 9) {
+			if (contador_txt >= 7) {
 				muestraFinal = true;
 				resultadoPartida = true;
 				vivo = false; //Bloquea controles
@@ -2513,7 +2357,8 @@ void prepareScene() {
 	//Mario
 	marioModelAnimate.setShader(&shaderMulLighting);
 
-	
+	//Menu
+	menuImage.setShader(&shaderMulLighting);
 }
 
 void prepareDepthScene() {
@@ -2542,6 +2387,9 @@ void prepareDepthScene() {
 
 	//Mario
 	marioModelAnimate.setShader(&shaderDepth);
+
+	//Menu
+	menuImage.setShader(&shaderDepth);
 }
 
 void renderScene(bool renderParticles) {
@@ -2708,6 +2556,9 @@ void renderScene(bool renderParticles) {
 	glDisable(GL_CULL_FACE);
 	modelFountain.render(modelMatrixFountain);
 	glEnable(GL_CULL_FACE);
+
+	if (!vivo)
+		menuImage.render(modelMatrixMenu);
 
 	// Se regresa el cull faces IMPORTANTE para la capa
 	glEnable(GL_CULL_FACE);
