@@ -92,6 +92,12 @@ Box boxLightViewBox;
 
 ShadowBox *shadowBox;
 
+//Game Variables
+bool vivo = false;
+bool muestraFinal = false;
+bool principal = true;
+bool resultadoPartida = false;
+
 // Models complex instances
 Model modelEnemy;
 
@@ -126,6 +132,7 @@ GLuint skyboxTextureID;
 // Modelo para el redener de texto
 FontTypeRendering::FontTypeRendering *modelText;
 FontTypeRendering::FontTypeRendering *damageText;
+FontTypeRendering::FontTypeRendering *menuP;
 
 GLenum types[6] = {
 GL_TEXTURE_CUBE_MAP_POSITIVE_X,
@@ -282,6 +289,7 @@ bool processInput(bool continueApplication = true);
 void prepareScene();
 void prepareDepthScene();
 void renderScene(bool renderParticles = true);
+void resetGame();
 
 void initParticleBuffers() {
 	// Generate the buffers
@@ -1113,6 +1121,8 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelText->Initialize();
 	damageText = new FontTypeRendering::FontTypeRendering(screenWidth, screenHeight);
 	damageText->Initialize();
+	menuP = new FontTypeRendering::FontTypeRendering(screenWidth, screenHeight);
+	menuP->Initialize();
 }
 
 void destroy() {
@@ -1241,129 +1251,177 @@ bool processInput(bool continueApplication) {
 	if (exitApp || glfwWindowShouldClose(window) != 0) {
 		return false;
 	}
+	if (vivo) {
+		if (glfwJoystickPresent(GLFW_JOYSTICK_1) == GL_TRUE) {
+			//std::cout << "Esta presente el joystick" << std::endl;
+			int axesCount, buttonCount;
+			const float *axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
+			//std::cout << "Número de ejes disponibles :=>" << axesCount << std::endl;
+			//std::cout << "Left Stick X axis: " << axes[0] << std::endl;
+			//std::cout << "Left Stick Y axis: " << axes[1] << std::endl;
+			//std::cout << "Left Trigger/L2: " << axes[2] << std::endl;
+			//std::cout << "Right Stick X axis: " << axes[3] << std::endl;
+			//std::cout << "Right Stick Y axis: " << axes[4] << std::endl;
+			//std::cout << "Right Trigger/R2: " << axes[5] << std::endl;
 
-	if (glfwJoystickPresent(GLFW_JOYSTICK_1) == GL_TRUE) {
-		//std::cout << "Esta presente el joystick" << std::endl;
-		int axesCount, buttonCount;
-		const float *axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
-		//std::cout << "Número de ejes disponibles :=>" << axesCount << std::endl;
-		//std::cout << "Left Stick X axis: " << axes[0] << std::endl;
-		//std::cout << "Left Stick Y axis: " << axes[1] << std::endl;
-		//std::cout << "Left Trigger/L2: " << axes[2] << std::endl;
-		//std::cout << "Right Stick X axis: " << axes[3] << std::endl;
-		//std::cout << "Right Stick Y axis: " << axes[4] << std::endl;
-		//std::cout << "Right Trigger/R2: " << axes[5] << std::endl;
-
-		if (fabs(axes[1]) > 0.2) {
-			modelMatrixMario = glm::translate(modelMatrixMario,
+			if (fabs(axes[1]) > 0.2) {
+				modelMatrixMario = glm::translate(modelMatrixMario,
 					glm::vec3(0, 0, -axes[1] * 0.1));
-			if (!isJump)
-				animationIndex = 1;
-			else {
-				animationIndex = 0;
-				
+				if (!isJump)
+					animationIndex = 1;
+				else {
+					animationIndex = 0;
+
+				}
+
 			}
-				
-		}
-		if (fabs(axes[0]) > 0.2) {
-			modelMatrixMario = glm::rotate(modelMatrixMario,
+			if (fabs(axes[0]) > 0.2) {
+				modelMatrixMario = glm::rotate(modelMatrixMario,
 					glm::radians(-axes[0] * 0.5f), glm::vec3(0, 1, 0));
-			if (!isJump)
-				animationIndex = 1;
-			else {
+				if (!isJump)
+					animationIndex = 1;
+				else {
+					animationIndex = 0;
+
+				}
+			}
+
+			if (fabs(axes[3]) > 0.2) {
+				camera->mouseMoveCamera(axes[3], 0.0, deltaTime);
+			}
+			if (fabs(axes[4]) > 0.2) {
+				camera->mouseMoveCamera(0.0, axes[4], deltaTime);
+			}
+
+			const unsigned char *buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1,
+				&buttonCount);
+			std::cout << "Número de botones disponibles :=>" << buttonCount
+				<< std::endl;
+			if (buttons[3] == GLFW_PRESS)
+				std::cout << "Se presiona x" << std::endl;
+
+
+
+			if (!isJump && buttons[0] == GLFW_PRESS) {
+				isJump = true;
+				sourcesPlay[4] = true;
+				startTimeJump = currTime;
+				tmv = 0;
 				animationIndex = 0;
-				
 			}
 		}
 
-		if (fabs(axes[3]) > 0.2) {
-			camera->mouseMoveCamera(axes[3], 0.0, deltaTime);
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+			camera->mouseMoveCamera(offsetX, 0.0, deltaTime);
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+			camera->mouseMoveCamera(0.0, offsetY, deltaTime);
+		offsetX = 0;
+		offsetY = 0;
+
+		if (availableSave && glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
+			saveFrame = true;
+			availableSave = false;
 		}
-		if (fabs(axes[4]) > 0.2) {
-			camera->mouseMoveCamera(0.0, axes[4], deltaTime);
+		if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_RELEASE)
+			availableSave = true;
+
+		if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+			modelMatrixMario = glm::rotate(modelMatrixMario, glm::radians(1.0f),
+				glm::vec3(0, 1, 0));
+			if (!isJump)
+				animationIndex = 1;
+			else
+				animationIndex = 0;
+		}
+		else if (modelSelected
+			== 2 && glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+			modelMatrixMario = glm::rotate(modelMatrixMario, glm::radians(-1.0f),
+				glm::vec3(0, 1, 0));
+			if (!isJump)
+				animationIndex = 1;
+			else
+				animationIndex = 0;
+		}
+		if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+			modelMatrixMario = glm::translate(modelMatrixMario,
+				glm::vec3(0, 0, 0.1));
+			if (!isJump)
+				animationIndex = 1;
+			else
+				animationIndex = 0;
+		}
+		else if (modelSelected
+			== 2 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+			modelMatrixMario = glm::translate(modelMatrixMario,
+				glm::vec3(0, 0, -0.1));
+			if (!isJump)
+				animationIndex = 1;
+			else
+				animationIndex = 0;
 		}
 
-		const unsigned char *buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1,
-				&buttonCount);
-		std::cout << "Número de botones disponibles :=>" << buttonCount
-				<< std::endl;
-		if (buttons[3] == GLFW_PRESS)
-			std::cout << "Se presiona x" << std::endl;
-
-
-
-		if (!isJump && buttons[0] == GLFW_PRESS) {
+		bool keySpaceStatus = glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS;
+		if (!isJump && keySpaceStatus) {
 			isJump = true;
-			sourcesPlay[4] = true;
 			startTimeJump = currTime;
 			tmv = 0;
+			sourcesPlay[4] = true;
+		}
+
+		if (isJump) {
 			animationIndex = 0;
 		}
+	}   else {
+			 //Activar bool que muestre texto
+			 if (principal) {
+				 //Mostramos textos del menú principal
+				 if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) { // Se podrían añadir los botones de un control
+					 vivo = true;
+				 }
+			 }
+			 else if (muestraFinal) {
+				 //Mostramos textos del GameOver Victoria
+				 
+				 if (resultadoPartida) { //Victoria
+					 if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) { // Se podrían añadir los botones de un control
+						 vivo = true;
+						 muestraFinal = false;
+						 /*resetGame();*/
+					 }
+				 }
+				 else { //Derrota
+					 if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) { // Se podrían añadir los botones de un control
+						 vivo = true;
+						 muestraFinal = false;
+						 /*resetGame();*/
+					 }
+				 }
+			 }
 	}
-
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-		camera->mouseMoveCamera(offsetX, 0.0, deltaTime);
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
-		camera->mouseMoveCamera(0.0, offsetY, deltaTime);
-	offsetX = 0;
-	offsetY = 0;
-
-	if (availableSave && glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
-		saveFrame = true;
-		availableSave = false;
-	}
-	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_RELEASE)
-		availableSave = true;
-
-	if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-		modelMatrixMario = glm::rotate(modelMatrixMario, glm::radians(1.0f),
-				glm::vec3(0, 1, 0));
-		if (!isJump)
-			animationIndex = 1;
-		else
-			animationIndex = 0;
-	} else if (modelSelected
-			== 2&& glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-		modelMatrixMario = glm::rotate(modelMatrixMario, glm::radians(-1.0f),
-				glm::vec3(0, 1, 0));
-		if (!isJump)
-			animationIndex = 1;
-		else
-			animationIndex = 0;
-	}
-	if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-		modelMatrixMario = glm::translate(modelMatrixMario,
-				glm::vec3(0, 0, 0.1));
-		if (!isJump)
-			animationIndex = 1;
-		else
-			animationIndex = 0;
-	} else if (modelSelected
-			== 2&& glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-		modelMatrixMario = glm::translate(modelMatrixMario,
-				glm::vec3(0, 0, -0.1));
-		if (!isJump)
-			animationIndex = 1;
-		else
-			animationIndex = 0;
-	}
-
-	bool keySpaceStatus = glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS;
-	if(!isJump && keySpaceStatus){
-		isJump = true;
-		startTimeJump = currTime;
-		tmv = 0;
-		sourcesPlay[4] = true;
-	}
-
-	if (isJump) {
-		animationIndex = 0;
-	}
-
 
 
 	glfwPollEvents();
 	return continueApplication;
+}
+
+void resetGame() {
+	contador_damage = 5; //Vidas al máximo
+	contador_txt = 0; //Monedas a 0
+	//Reiniciar el render de 
+	//enemyRender
+	for (int i = 0; i < enemyPosition.size(); i++)
+		enemyRender[i] = true;
+	for (int i = 0; i < enemyPosition2.size(); i++)
+		enemyRender2[i] = true;
+	for (int i = 0; i < monedaPosition.size(); i++)
+		monedasRender[i] = true;
+	//muestraFinal = false;
+	modelMatrixMario = glm::translate(glm::mat4(1.0f),
+		glm::vec3(13.0f, 0.05f, -5.0f));
+	modelMatrixMario = glm::rotate(modelMatrixMario, glm::radians(-90.0f),
+		glm::vec3(0, 1, 0));
+	//enemyRender2
+	//monedasRender
 }
 
 void applicationLoop() {
@@ -2007,19 +2065,38 @@ void applicationLoop() {
 		}
 
 
-		if (contador_damage > 0) {
-			modelText->render("Puntuacion " + std::to_string(contador_txt), -1, 0.0, 24, 1.0, 1.0, 1.0);
-			damageText->render("Vida restante: " + std::to_string(contador_damage), -1, 0.8, 24, 1.0, 1.0, 1.0);
+		if (!vivo && principal) { //Inicia el juego y muestra menu principal
+			menuP->render("Presiona Enter para iniciar el juego o presiona Esc para salir", -0.8, -0.5, 24, 1.0, 1.0, 1.0);
 		}
-		if (contador_damage <= 0) {
-			
-			damageText->render("Perdiste", 0.0, 0.0, 24, 1.0, 1.0, 1.0);
-
-		}
-		if (contador_txt >= 1) {
-			
-			
-			damageText->render("Ganaste", 0.0, 0.0, 24, 1.0, 1.0, 1.0);
+		else if (!vivo && !principal) {
+			if (resultadoPartida) {
+				menuP->render("Presiona Enter para intentar ganar de nuevo \no Esc para salir", -0.8, -0.5, 24, 1.0, 1.0, 1.0);
+			}
+			else {
+				menuP->render("Presiona Enter para intentarlo de nuevo \no Esc para salir", -0.8, -0.5, 24, 1.0, 1.0, 1.0);
+			}
+		} else {
+			principal = false;
+			if (contador_damage > 0) {
+				modelText->render("Puntuacion " + std::to_string(contador_txt), -1, 0.0, 24, 1.0, 1.0, 1.0);
+				damageText->render("Vida restante: " + std::to_string(contador_damage), -1, 0.8, 24, 1.0, 1.0, 1.0);
+			}
+			if (contador_damage <= 0) {
+				muestraFinal = true;
+				resultadoPartida = false;
+				damageText->render("Perdiste", 0.0, 0.0, 24, 1.0, 1.0, 1.0);
+				//menuP->render("Presiona Enter para intentarlo de nuevo o Esc para salir", -0.8, -0.5, 24, 1.0, 1.0, 1.0);
+				vivo = false; //Bloquea controles
+				resetGame();
+			}
+			if (contador_txt >= 1) {
+				muestraFinal = true;
+				resultadoPartida = true;
+				vivo = false; //Bloquea controles
+				//menuP->render("Presiona Enter para intentar ganar de nuevo o Esc para salir", -0.8, -0.5, 24, 1.0, 1.0, 1.0);
+				damageText->render("Ganaste", 0.0, 0.0, 24, 1.0, 1.0, 1.0);
+				resetGame();
+			}
 		}
 
 		glfwSwapBuffers(window);
