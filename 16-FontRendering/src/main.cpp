@@ -107,6 +107,12 @@ Model modelEnemy;
 //Arboles
 Model modelArbol;
 
+//trineos
+Model modelTrineo;
+
+//snowman
+Model modelSnowman;
+
 //estrellas
 Model modelEstrella;
 
@@ -162,6 +168,8 @@ glm::mat4 modelMatrixEnemy = glm::mat4(1.0);
 glm::mat4 modelMatrixMario = glm::mat4(1.0f);
 glm::mat4 modelMatrixFountain = glm::mat4(1.0f);
 glm::mat4 modelMatrixArbol = glm::mat4(1.0);
+glm::mat4 modelMatrixSnowman = glm::mat4(1.0);
+glm::mat4 modelMatrixTrineo = glm::mat4(1.0);
 
 int animationIndex = 2;
 int modelSelected = 2;
@@ -183,26 +191,146 @@ float EnemySteep = 0.0;
 //Estrellas posicion
 
 std::vector<glm::vec3> estrellaPosition = { 
-	glm::vec3(-7.03, 0, -16.14), 
-	glm::vec3(24.41, 0, -32.57), 
-	glm::vec3(-10.15, 0, -52.10) };
+	glm::vec3(0,0,0),
+	glm::vec3(55,0,-19.89),
+	glm::vec3(25,0,38),
+	glm::vec3(-96,0,69),
+	glm::vec3(-124.4,0,17.6),
+	glm::vec3(-61.6,0,-89.1),
+	glm::vec3(-43.5,0,-143.5)
+	
+};
 std::vector<float> estrellaOrientation = { 21.37 + 90, -65.0 + 90 };
 
 // monedas positions
-std::vector<glm::vec3> monedaPosition = { glm::vec3(0, 0, -19.14), glm::vec3(
-		0, 0, -34.57), glm::vec3(0, 0, -54.10) };
+std::vector<glm::vec3> monedaPosition = {
+
+	glm::vec3(80,0,19),
+
+	glm::vec3(20, 0, -54.10),
+	glm::vec3(-53.9, 0, -35.20),
+	glm::vec3(-38.4,0,32.9),
+	glm::vec3(-118.6,0,-101.8),
+	glm::vec3(3.6,0,-99.9),
+	glm::vec3(-129,0,-29),
+	glm::vec3(39,0,22),
+	glm::vec3(0,0,0)
+};
+
+
 //monedas render
-bool monedasRender[3] = { true,true,true };
+bool monedasRender[9] = { true,true,true,true, true, true,true,true, true};
 
 // Enemy positions
-std::vector<glm::vec3> enemyPosition = { glm::vec3(0, 0, -18), glm::vec3(0,0,-33), glm::vec3(0,0,-53) };
-std::vector<glm::vec3> enemyPosition2 = { glm::vec3(0, 0, -20), glm::vec3(0,0,-35), glm::vec3(0,0,-55) };
+std::vector<glm::vec3> enemyPosition = { 
+	glm::vec3(80,0,19.5),
+	glm::vec3(20,0,-53.6),
+	glm::vec3(-53.9,0,-34.7),
+	glm::vec3(-38.4,0,33.4),
+	glm::vec3(-118.6,0,-101.3),
+	glm::vec3(3.6,0,-99.4),
+	glm::vec3(-129,0,-28.5),
+	glm::vec3(39,0,22.5),
+	glm::vec3(0,0,0.5)
+
+};
+std::vector<glm::vec3> enemyPosition2 = { 
+	glm::vec3(80.5,0,19),
+	glm::vec3(20.5,0,-54.1),
+	glm::vec3(-53.4,0,-35.2),
+	glm::vec3(-37.9,0,32.9),
+	glm::vec3(-118.1,0,-101.8),
+	glm::vec3(4.1,0,-99.9),
+	glm::vec3(-128.5,0,-29),
+	glm::vec3(39.5,0,22),
+	glm::vec3(0.5,0,0),
+
+
+};
+
+std::vector<glm::vec3> enemyPosition3 = {
+	glm::vec3(80,0,18.5),
+	glm::vec3(20,0,-54.6),
+	glm::vec3(-53.9,0,-35.7),
+	glm::vec3(-38.4,0,32.4),
+	glm::vec3(-118.6,0,-102.3),
+	glm::vec3(3.6,0,-100.4),
+	glm::vec3(-129,0,-29.5),
+	glm::vec3(39,0,21.5),
+	glm::vec3(0,0,-0.5)
+
+};
+
+std::vector<glm::vec3> enemyPosition4 = {
+	glm::vec3(79.5,0,19),
+	glm::vec3(19.5,0,-54.1),
+	glm::vec3(-54.4,0,-35.2),
+	glm::vec3(-38.9,0,32.9),
+	glm::vec3(-119.1,0,-101.8),
+	glm::vec3(3.1,0,-99.9),
+	glm::vec3(-129.5,0,-29),
+	glm::vec3(38.5,0,22),
+	glm::vec3(-0.5,0,0)
+
+};
+
+
 // Enemy renders
-bool enemyRender[3] = { true, true, true };
-bool enemyRender2[3] = { true, true, true };
+bool enemyRender[9] = { true, true, true,true, true, true,true, true, true};
+bool enemyRender2[9] = { true, true, true,true, true, true,true, true, true};
+bool enemyRender3[9] = { true, true, true,true, true, true,true, true, true };
+bool enemyRender4[9] = { true, true, true,true, true, true,true, true, true};
 
 //Arbol position
-std::vector<glm::vec3> arbolPosition = { glm::vec3(0, 0, -19), glm::vec3(0,0,-30), glm::vec3(0,0,-50) };
+std::vector<glm::vec3> arbolPosition = { 
+	glm::vec3(0, 0, -19),
+	glm::vec3(0,0,-30), 
+	glm::vec3(45,0,-29),
+	glm::vec3(44,0,10),
+	glm::vec3(73,0,-110),
+	glm::vec3(11,0,-78),
+	glm::vec3(-80,0,-40),
+	glm::vec3(-16,0,-19),
+	glm::vec3(-84,0,-42),
+	glm::vec3(-110,0,-57),
+	glm::vec3(-122,0,-122),
+	glm::vec3(86,0,-129),
+	glm::vec3(-40,0,-121),
+	glm::vec3(32,0,-107),
+	glm::vec3(54,0,-27),
+	glm::vec3(33,0,58),
+	glm::vec3(17,0,-66),
+	glm::vec3(61,0,-25),
+	glm::vec3(40,0,-22),
+	glm::vec3(46,0,65),
+	glm::vec3(-49,0,85),
+	glm::vec3(-45,0,-37),
+	glm::vec3(17,0,-59),
+	glm::vec3(-107.4,0, 31),
+	glm::vec3(-57,0, 22),
+	glm::vec3(-23,0, 43)
+};
+
+std::vector<glm::vec3> snowmanPosition = {
+	glm::vec3(10, 0, -19),
+	glm::vec3(10,0,-30),
+	glm::vec3(10,0,-40),
+	glm::vec3(-34,0,-13),
+	glm::vec3(-67,0,-75),
+	glm::vec3(108,0,-124),
+	glm::vec3(-44,0,49),
+	glm::vec3(-140,0,93),
+	glm::vec3(-70,0,-136),
+	glm::vec3(-17,0,-120)
+
+};
+
+std::vector<glm::vec3> trineoPosition = {
+	glm::vec3(-105,0,-136),
+	glm::vec3(22.4,0,54),
+	glm::vec3(-100,0,83.6)
+
+};
 
 // Blending model unsorted
 std::map<std::string, glm::vec3> blendingUnsorted = { { "fountain", glm::vec3(5.0, 0.0, -40.0) }, { "fire", glm::vec3(0.0, 0.0, 7.0) } };
@@ -212,7 +340,7 @@ double currTime, lastTime;
 
 // Jump variables
 bool isJump = false;
-float GRAVITY = 1.81;
+float GRAVITY = 3.5;
 double tmv = 0;
 double startTimeJump = 0;
 
@@ -546,6 +674,14 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	//arboles
 	modelArbol.loadModel("../models/arbol/arbol.fbx");
 	modelArbol.setShader(&shaderMulLighting);
+
+	//trineo
+	modelTrineo.loadModel("../models/trineo/trineo.fbx");
+	modelTrineo.setShader(&shaderMulLighting);
+
+	//snowman
+	modelSnowman.loadModel("../models/muneco/muneco.fbx");
+	modelSnowman.setShader(&shaderMulLighting);
 
 	terrain.init();
 	terrain.setShader(&shaderTerrain);
@@ -1093,7 +1229,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 
 	//moneda
 	alSourcef(source[2], AL_PITCH, 1.0f);
-	alSourcef(source[2], AL_GAIN, 1.0f);
+	alSourcef(source[2], AL_GAIN, 2.0f);
 	alSourcefv(source[2], AL_POSITION, source2Pos);
 	alSourcefv(source[2], AL_VELOCITY, source2Vel);
 	alSourcei(source[2], AL_BUFFER, buffer[2]);
@@ -1111,7 +1247,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 
 	//salto
 	alSourcef(source[4], AL_PITCH, 1.0f);
-	alSourcef(source[4], AL_GAIN, 1.0f);
+	alSourcef(source[4], AL_GAIN, 0.1f);
 	alSourcefv(source[4], AL_POSITION, source4Pos);
 	alSourcefv(source[4], AL_VELOCITY, source4Vel);
 	alSourcei(source[4], AL_BUFFER, buffer[4]);
@@ -1159,6 +1295,12 @@ void destroy() {
 
 	//arbol
 	modelArbol.destroy();
+
+	//trineo
+	modelTrineo.destroy();
+
+	//snowman
+	modelSnowman.destroy();
 
 	//estrellas
 	modelEstrella.destroy();
@@ -1385,7 +1527,7 @@ bool processInput(bool continueApplication) {
 		}
 		if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
 			modelMatrixMario = glm::translate(modelMatrixMario,
-				glm::vec3(0, 0, 0.1));
+				glm::vec3(0, 0, 0.15));
 			if (!isJump)
 				animationIndex = 1;
 			else
@@ -1394,7 +1536,7 @@ bool processInput(bool continueApplication) {
 		else if (modelSelected
 			== 2 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
 			modelMatrixMario = glm::translate(modelMatrixMario,
-				glm::vec3(0, 0, -0.1));
+				glm::vec3(0, 0, -0.15));
 			if (!isJump)
 				animationIndex = 1;
 			else
@@ -1452,6 +1594,10 @@ void resetGame() {
 		enemyRender[i] = true;
 	for (int i = 0; i < enemyPosition2.size(); i++)
 		enemyRender2[i] = true;
+	for (int i = 0; i < enemyPosition3.size(); i++)
+		enemyRender3[i] = true;
+	for (int i = 0; i < enemyPosition4.size(); i++)
+		enemyRender4[i] = true;
 	for (int i = 0; i < monedaPosition.size(); i++)
 		monedasRender[i] = true;
 	//muestraFinal = false;
@@ -1591,15 +1737,28 @@ void applicationLoop() {
 		/*******************************************
 		 * Propiedades de neblina
 		 *******************************************/
+		
 		shaderMulLighting.setVectorFloat3("fogColor",
 			glm::value_ptr(glm::vec3(0.6, 0.6, 0.8)));
-		shaderMulLighting.setFloat("density", 0.03);
+		shaderMulLighting.setFloat("density", 0.05);
 		shaderTerrain.setVectorFloat3("fogColor",
 			glm::value_ptr(glm::vec3(0.6, 0.6, 0.8)));
-		shaderTerrain.setFloat("density", 0.03);
+		shaderTerrain.setFloat("density", 0.05);
 		shaderSkybox.setVectorFloat3("fogColor",
 			glm::value_ptr(glm::vec3(0.6, 0.6, 0.8)));
-		shaderSkybox.setFloat("density", 0.03);
+		shaderSkybox.setFloat("density", 0.05);
+		/*
+		shaderMulLighting.setVectorFloat3("fogColor",
+			glm::value_ptr(glm::vec3(0.1, 0.1, 0.1)));
+		shaderMulLighting.setFloat("density", 0.0001);
+		shaderTerrain.setVectorFloat3("fogColor",
+			glm::value_ptr(glm::vec3(0.1, 0.1, 0.1)));
+		shaderTerrain.setFloat("density", 0.0001);
+		shaderSkybox.setVectorFloat3("fogColor",
+			glm::value_ptr(glm::vec3(0.1, 0.1, 0.1)));
+		shaderSkybox.setFloat("density", 0.000);
+		*/
+
 
 		/*******************************************
 		 * Propiedades Luz direccional
@@ -1718,8 +1877,17 @@ void applicationLoop() {
 		for (int i = 0; i < enemyPosition2.size(); i++) {
 			glm::mat4 matrixAdjustEnemigo2 = glm::mat4(1.0f);
 			matrixAdjustEnemigo2 = glm::translate(matrixAdjustEnemigo2, enemyPosition2[i]);
-			//matrixAdjustEnemigo2 = glm::translate(matrixAdjustEnemigo2, glm::vec3(0, 0, 0));
 			glm::vec3 enemyPosition2 = glm::vec3(matrixAdjustEnemigo2[3]);
+		}
+		for (int i = 0; i < enemyPosition3.size(); i++) {
+			glm::mat4 matrixAdjustEnemigo3 = glm::mat4(1.0f);
+			matrixAdjustEnemigo3 = glm::translate(matrixAdjustEnemigo3, enemyPosition3[i]);
+			glm::vec3 enemyPosition3 = glm::vec3(matrixAdjustEnemigo3[3]);
+		}
+		for (int i = 0; i < enemyPosition4.size(); i++) {
+			glm::mat4 matrixAdjustEnemigo4 = glm::mat4(1.0f);
+			matrixAdjustEnemigo4 = glm::translate(matrixAdjustEnemigo4, enemyPosition4[i]);
+			glm::vec3 enemyPosition4 = glm::vec3(matrixAdjustEnemigo4[3]);
 		}
 
 		//posicion arboles
@@ -1727,8 +1895,23 @@ void applicationLoop() {
 		for (int i = 0; i < arbolPosition.size(); i++) {
 			glm::mat4 matrixAdjustArbol = glm::mat4(1.0f);
 			matrixAdjustArbol = glm::translate(matrixAdjustArbol, arbolPosition[i]);
-			//matrixAdjustEnemigo = glm::translate(matrixAdjustEnemigo, glm::vec3(0, 0, 0));
 			glm::vec3 arbolPosition = glm::vec3(matrixAdjustArbol[3]);
+		}
+
+		//posicion trineo
+
+		for (int i = 0; i < trineoPosition.size(); i++) {
+			glm::mat4 matrixAdjustTrineo = glm::mat4(1.0f);
+			matrixAdjustTrineo = glm::translate(matrixAdjustTrineo, trineoPosition[i]);
+			glm::vec3 trineoPosition = glm::vec3(matrixAdjustTrineo[3]);
+		}
+
+		//posicion snowman
+
+		for (int i = 0; i < snowmanPosition.size(); i++) {
+			glm::mat4 matrixAdjustSnowman = glm::mat4(1.0f);
+			matrixAdjustSnowman = glm::translate(matrixAdjustSnowman, snowmanPosition[i]);
+			glm::vec3 SnowmanPosition = glm::vec3(matrixAdjustSnowman[3]);
 		}
 
 
@@ -1851,6 +2034,26 @@ void applicationLoop() {
 			enemyCollider2.ratio = modelEnemy.getSbb().ratio*0.5;
 			std::get<0>(collidersSBB.find("enemx" + std::to_string(i))->second) = enemyCollider2;
 		}
+		for (int i = 0; i < enemyPosition3.size(); i++) {
+			AbstractModel::SBB enemyCollider3;
+			glm::mat4 modelMatrixColliderEnemy3 = glm::mat4(1.0);
+			modelMatrixColliderEnemy3 = glm::translate(modelMatrixColliderEnemy3, enemyPosition3[i]);
+			addOrUpdateColliders(collidersSBB, "enem-y" + std::to_string(i), enemyCollider3, modelMatrixColliderEnemy3);
+			modelMatrixColliderEnemy3 = glm::translate(modelMatrixColliderEnemy3, glm::vec3(modelEnemy.getSbb().c.x, modelEnemy.getSbb().c.y, modelEnemy.getSbb().c.z - EnemySteep));
+			enemyCollider3.c = glm::vec3(modelMatrixColliderEnemy3[3]);
+			enemyCollider3.ratio = modelEnemy.getSbb().ratio * 0.5;
+			std::get<0>(collidersSBB.find("enem-y" + std::to_string(i))->second) = enemyCollider3;
+		}
+		for (int i = 0; i < enemyPosition4.size(); i++) {
+			AbstractModel::SBB enemyCollider4;
+			glm::mat4 modelMatrixColliderEnemy4 = glm::mat4(1.0);
+			modelMatrixColliderEnemy4 = glm::translate(modelMatrixColliderEnemy4, enemyPosition4[i]);
+			addOrUpdateColliders(collidersSBB, "enem-x" + std::to_string(i), enemyCollider4, modelMatrixColliderEnemy4);
+			modelMatrixColliderEnemy4 = glm::translate(modelMatrixColliderEnemy4, glm::vec3(modelEnemy.getSbb().c.x - EnemySteep, modelEnemy.getSbb().c.y, modelEnemy.getSbb().c.z));
+			enemyCollider4.c = glm::vec3(modelMatrixColliderEnemy4[3]);
+			enemyCollider4.ratio = modelEnemy.getSbb().ratio * 0.5;
+			std::get<0>(collidersSBB.find("enem-x" + std::to_string(i))->second) = enemyCollider4;
+		}
 
 
 		// arbolcollider
@@ -1873,6 +2076,46 @@ void applicationLoop() {
 			arbolCollider.e = modelArbol.getObb().e * glm::vec3(0.2, 1, 0.2);
 			std::get<0>(collidersOBB.find("arbol" + std::to_string(i))->second) = arbolCollider;
 		}
+
+		// trineo collider
+		for (int i = 0; i < trineoPosition.size(); i++) {
+			AbstractModel::OBB trineoCollider;
+			glm::mat4 modelMatrixColliderTrineo = glm::mat4(1.0);
+			modelMatrixColliderTrineo = glm::translate(modelMatrixColliderTrineo, trineoPosition[i]);
+			addOrUpdateColliders(collidersOBB, "trineo" + std::to_string(i), trineoCollider, modelMatrixColliderTrineo);
+			// Set the orientation of collider before doing the scale
+			trineoCollider.u = glm::quat_cast(modelMatrixColliderTrineo);
+			modelMatrixColliderTrineo = glm::translate(modelMatrixColliderTrineo,
+				glm::vec3(modelTrineo.getObb().c.x, //atras
+					modelTrineo.getObb().c.y, //altura
+					modelTrineo.getObb().c.z));
+			;
+			trineoCollider.c = glm::vec3(modelMatrixColliderTrineo[3]);
+			trineoCollider.e = modelTrineo.getObb().e * glm::vec3(1, 1, 1);
+			std::get<0>(collidersOBB.find("trineo" + std::to_string(i))->second) = trineoCollider;
+		}
+
+
+		// snowman collider
+		for (int i = 0; i < snowmanPosition.size(); i++) {
+			AbstractModel::OBB snowmanCollider;
+			glm::mat4 modelMatrixColliderSnowman = glm::mat4(1.0);
+			modelMatrixColliderSnowman = glm::translate(modelMatrixColliderSnowman, snowmanPosition[i]);
+			addOrUpdateColliders(collidersOBB, "snowman" + std::to_string(i), snowmanCollider, modelMatrixColliderSnowman);
+			// Set the orientation of collider before doing the scale
+			snowmanCollider.u = glm::quat_cast(modelMatrixColliderSnowman);
+			//modelMatrixColliderSnowman = glm::scale(modelMatrixColliderSnowman, glm::vec3(0.2, 1, 0.2));
+
+			modelMatrixColliderSnowman = glm::translate(modelMatrixColliderSnowman,
+				glm::vec3(modelSnowman.getObb().c.x, //atras
+					modelSnowman.getObb().c.y, //altura
+					modelSnowman.getObb().c.z ));
+			;
+			snowmanCollider.c = glm::vec3(modelMatrixColliderSnowman[3]);
+			snowmanCollider.e = modelSnowman.getObb().e * glm::vec3(.5,1,1);
+			std::get<0>(collidersOBB.find("snowman" + std::to_string(i))->second) = snowmanCollider;
+		}
+
 
 		//Collider del enemigo/*
 		//Single enemy
@@ -2023,6 +2266,34 @@ void applicationLoop() {
 						alSourcefv(source[3], AL_POSITION, source3Pos);
 						sourcesPlay[3] = true;
 					}
+					if (it->first.find("enem-y") != std::string::npos) {
+
+
+						std::string pos = it->first.substr(6, 1);
+						//std::cout << "The enemy" << pos << std::endl;
+						enemyRender3[std::stoi(pos)] = false;
+						contador_damage--;
+						int a = std::stoi(pos);
+						source3Pos[0] = enemyPosition3[a].x;
+						source3Pos[1] = enemyPosition3[a].y;
+						source3Pos[2] = enemyPosition3[a].z;
+						alSourcefv(source[3], AL_POSITION, source3Pos);
+						sourcesPlay[3] = true;
+					}
+
+					if (it->first.find("enem-x") != std::string::npos) {
+
+						std::string pos = it->first.substr(6, 1);
+						
+						enemyRender4[std::stoi(pos)] = false;
+						contador_damage--;
+						int a = std::stoi(pos);
+						source3Pos[0] = enemyPosition4[a].x;
+						source3Pos[1] = enemyPosition4[a].y;
+						source3Pos[2] = enemyPosition4[a].z;
+						alSourcefv(source[3], AL_POSITION, source3Pos);
+						sourcesPlay[3] = true;
+					}
 				}
 			}
 			addOrUpdateCollisionDetection(collisionDetection, it->first,
@@ -2046,9 +2317,10 @@ void applicationLoop() {
 				if (!colIt->second)
 					addOrUpdateColliders(collidersOBB, jt->first);
 				else {
-					//if (jt->first.compare("Mario") == 0)
-					if (jt->first.find("Mario") != std::string::npos)
-						modelMatrixMario = std::get<1>(jt->second); 
+					if (jt->first.find("Mario") != std::string::npos) {
+						modelMatrixMario = std::get<1>(jt->second);
+					}
+						
 					std::cout << "000000000000000000000000000" << std::endl;
 					if (jt->first.find("moneda") != std::string::npos) {
 						std::string pos = jt->first.substr(6, 1);
@@ -2056,19 +2328,23 @@ void applicationLoop() {
 						int a = std::stoi(pos);
 						monedasRender[std::stoi(pos)] = false;	
 						contador_txt++;
-						source2Pos[0] = monedaPosition[a].x;
-						source2Pos[1] = monedaPosition[a].y;
-						source2Pos[2] = monedaPosition[a].z;
-						alSourcefv(source[2], AL_POSITION, source2Pos);
 						sourcesPlay[2] = true;
 
 					}
+
 					
 					
 						
 				}
 			}
 		}
+
+
+
+		std::cout << "x" << modelMatrixMario[3].x << std::endl;
+		std::cout << "z" << modelMatrixMario[3].z << std::endl;
+			
+		
 
 		/*******************************************
 		 * Interpolation key frames with disconect objects
@@ -2085,7 +2361,7 @@ void applicationLoop() {
 
 		switch (stateEnemy) {
 		case 0:
-			EnemySteep += 0.1;
+			EnemySteep += 0.16;
 			//std::cout << "Posicion " << EnemySteep << std::endl;
 			//std::cout << "Estado " << stateEnemy << std::endl;
 			if (EnemySteep > 5) {
@@ -2093,7 +2369,7 @@ void applicationLoop() {
 			}
 			break;
 		case 1:
-			EnemySteep -= 0.1;
+			EnemySteep -= 0.16;
 			//std::cout << "Posicion " << EnemySteep << std::endl;
 			//std::cout << "Estado " << stateEnemy << std::endl;
 			if (EnemySteep < 0) {
@@ -2131,7 +2407,7 @@ void applicationLoop() {
 				vivo = false; //Bloquea controles
 				resetGame();
 			}
-			if (contador_txt >= 1) {
+			if (contador_txt >= 9) {
 				muestraFinal = true;
 				resultadoPartida = true;
 				vivo = false; //Bloquea controles
@@ -2157,6 +2433,12 @@ void applicationLoop() {
 		source4Pos[1] = modelMatrixMario[3].y;
 		source4Pos[2] = modelMatrixMario[3].z;
 		alSourcefv(source[4], AL_POSITION, source4Pos);
+
+		//monedas
+		source2Pos[0] = modelMatrixMario[3].x;
+		source2Pos[1] = modelMatrixMario[3].y;
+		source2Pos[2] = modelMatrixMario[3].z;
+		alSourcefv(source[2], AL_POSITION, source2Pos);
 
 
 
@@ -2209,8 +2491,13 @@ void prepareScene() {
 	modelEnemy.setShader(&shaderMulLighting);
 
 	//arboles
-	//Enemigo
 	modelArbol.setShader(&shaderMulLighting);
+
+	//trineo
+	modelTrineo.setShader(&shaderMulLighting);
+
+	//snowman
+	modelSnowman.setShader(&shaderMulLighting);
 
 	terrain.setShader(&shaderTerrain);
 
@@ -2238,6 +2525,12 @@ void prepareDepthScene() {
 
 	//arbol
 	modelArbol.setShader(&shaderDepth);
+
+	//trineo
+	modelTrineo.setShader(&shaderDepth);
+
+	//snowman
+	modelSnowman.setShader(&shaderDepth);
 
 	terrain.setShader(&shaderDepth);
 
@@ -2341,17 +2634,55 @@ void renderScene(bool renderParticles) {
 		}
 	}
 
+	for (int i = 0; i < enemyPosition3.size(); i++) {
+		if (enemyRender3[i]) {
+			enemyPosition3[i].y = terrain.getHeightTerrain(enemyPosition3[i].x, enemyPosition3[i].z - EnemySteep);
+			modelEnemy.setPosition(glm::vec3(enemyPosition3[i].x, enemyPosition3[i].y, enemyPosition3[i].z - EnemySteep));
+			modelEnemy.render();
+		}
+		else {
+			enemyPosition3[i].y = -100;
+			modelEnemy.setPosition(enemyPosition3[i]);
+		}
+	}
+	for (int i = 0; i < enemyPosition4.size(); i++) {
+		if (enemyRender4[i]) {
+			enemyPosition4[i].y = terrain.getHeightTerrain(enemyPosition4[i].x - EnemySteep, enemyPosition4[i].z);
+			modelEnemy.setPosition(glm::vec3(enemyPosition4[i].x - EnemySteep, enemyPosition4[i].y, enemyPosition4[i].z));
+			modelEnemy.render();
+		}
+		else {
+			enemyPosition4[i].y = -100;
+			modelEnemy.setPosition(enemyPosition4[i]);
+		}
+	}
+
 
 	//arboles render
 	for (int i = 0; i < arbolPosition.size(); i++) {
 		arbolPosition[i].y = terrain.getHeightTerrain(arbolPosition[i].x,
 			arbolPosition[i].z);
 		modelArbol.setPosition(arbolPosition[i]);
-		//modelArbol.setScale(glm::vec3(0.5, 0.5, 0.5));
-		//modelArbol.setOrientation(glm::vec3(0, arbolOrientation[i], 0));
 		modelArbol.render();
 	}
 
+
+	//trineo render
+	for (int i = 0; i < trineoPosition.size(); i++) {
+		trineoPosition[i].y = terrain.getHeightTerrain(trineoPosition[i].x,
+			trineoPosition[i].z);
+		modelTrineo.setPosition(trineoPosition[i]);
+		modelTrineo.render();
+	}
+
+
+	//snowman render
+	for (int i = 0; i < snowmanPosition.size(); i++) {
+		snowmanPosition[i].y = terrain.getHeightTerrain(snowmanPosition[i].x,
+			snowmanPosition[i].z);
+		modelSnowman.setPosition(snowmanPosition[i]);
+		modelSnowman.render();
+	}
 
 
 	////Enemy render
@@ -2384,7 +2715,7 @@ void renderScene(bool renderParticles) {
 	/*******************************************
 	 * Custom Anim objects obj
 	 *******************************************/
-	modelMatrixMario[3][1] = -GRAVITY * tmv * tmv + 3.5 * tmv
+	modelMatrixMario[3][1] = -GRAVITY * tmv * tmv + 4.5 * tmv
 			+ terrain.getHeightTerrain(modelMatrixMario[3][0],
 					modelMatrixMario[3][2]);
 	tmv = currTime - startTimeJump;
@@ -2396,6 +2727,23 @@ void renderScene(bool renderParticles) {
 				modelMatrixMario[3][0], modelMatrixMario[3][2]);
 	}
 	//modelMatrixMario[3][1] = terrain.getHeightTerrain(modelMatrixMario[3][0], modelMatrixMario[3][2]);
+
+	//limites
+	if (modelMatrixMario[3].x > 99) {
+		modelMatrixMario[3].x = 99;
+	}
+
+	if (modelMatrixMario[3].z > 99) {
+		modelMatrixMario[3].z = 99;
+	}
+
+	if (modelMatrixMario[3].x < -150) {
+		modelMatrixMario[3].x = -150;
+	}
+
+	if (modelMatrixMario[3].z < -150) {
+		modelMatrixMario[3].z = -150;
+	}
 	glm::mat4 modelMatrixMarioBody = glm::mat4(modelMatrixMario);
 	modelMatrixMarioBody = glm::scale(modelMatrixMarioBody,
 			glm::vec3(0.021, 0.021, 0.021));
@@ -2405,9 +2753,6 @@ void renderScene(bool renderParticles) {
 
 
 	glActiveTexture(GL_TEXTURE0);
-
-
-
 
 
 
