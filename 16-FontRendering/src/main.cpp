@@ -114,7 +114,7 @@ Model modelFountain;
 // Mario
 Model marioModelAnimate;
 // Terrain model instance
-Terrain terrain(-1, -1, 200, 16, "../Textures/Terreno.png");
+Terrain terrain(-1, -1, 250, 16, "../Textures/Terreno.png");
 
 GLuint textureCespedID, textureWallID, textureWindowID, textureHighwayID,
 		textureLandingPadID;
@@ -1261,7 +1261,7 @@ bool processInput(bool continueApplication) {
 				animationIndex = 1;
 			else {
 				animationIndex = 0;
-				sourcesPlay[4] = true;
+				
 			}
 				
 		}
@@ -1272,7 +1272,7 @@ bool processInput(bool continueApplication) {
 				animationIndex = 1;
 			else {
 				animationIndex = 0;
-				sourcesPlay[4] = true;
+				
 			}
 		}
 
@@ -1294,6 +1294,7 @@ bool processInput(bool continueApplication) {
 
 		if (!isJump && buttons[0] == GLFW_PRESS) {
 			isJump = true;
+			sourcesPlay[4] = true;
 			startTimeJump = currTime;
 			tmv = 0;
 			animationIndex = 0;
