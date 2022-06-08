@@ -98,6 +98,9 @@ bool muestraFinal = false;
 bool principal = true;
 bool resultadoPartida = false;
 
+//Control type
+int tipoControl = 0;
+
 // Models complex instances
 Model modelEnemy;
 
@@ -133,6 +136,7 @@ GLuint skyboxTextureID;
 FontTypeRendering::FontTypeRendering *modelText;
 FontTypeRendering::FontTypeRendering *damageText;
 FontTypeRendering::FontTypeRendering *menuP;
+FontTypeRendering::FontTypeRendering *menuP2;
 
 GLenum types[6] = {
 GL_TEXTURE_CUBE_MAP_POSITIVE_X,
@@ -1123,6 +1127,8 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	damageText->Initialize();
 	menuP = new FontTypeRendering::FontTypeRendering(screenWidth, screenHeight);
 	menuP->Initialize();
+	menuP2 = new FontTypeRendering::FontTypeRendering(screenWidth, screenHeight);
+	menuP2->Initialize();
 }
 
 void destroy() {
@@ -1251,6 +1257,12 @@ bool processInput(bool continueApplication) {
 	if (exitApp || glfwWindowShouldClose(window) != 0) {
 		return false;
 	}
+	//Activar tipo de control
+	if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
+		tipoControl = 0;
+	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+		tipoControl = 1;
+
 	if (vivo) {
 		if (glfwJoystickPresent(GLFW_JOYSTICK_1) == GL_TRUE) {
 			//std::cout << "Esta presente el joystick" << std::endl;
@@ -1264,50 +1276,79 @@ bool processInput(bool continueApplication) {
 			//std::cout << "Right Stick Y axis: " << axes[4] << std::endl;
 			//std::cout << "Right Trigger/R2: " << axes[5] << std::endl;
 
-			if (fabs(axes[1]) > 0.2) {
-				modelMatrixMario = glm::translate(modelMatrixMario,
-					glm::vec3(0, 0, -axes[1] * 0.1));
-				if (!isJump)
-					animationIndex = 1;
-				else {
-					animationIndex = 0;
-
+			if (tipoControl == 0) {
+				if (fabs(axes[1]) > 0.2) {
+					modelMatrixMario = glm::translate(modelMatrixMario,
+						glm::vec3(0, 0, -axes[1] * 0.1));
+					if (!isJump)
+						animationIndex = 1;
+					else {
+						animationIndex = 0;
+					}
+				}
+				if (fabs(axes[0]) > 0.2) {
+					modelMatrixMario = glm::rotate(modelMatrixMario,
+						glm::radians(-axes[0] * 0.5f), glm::vec3(0, 1, 0));
+					if (!isJump)
+						animationIndex = 1;
+					else {
+						animationIndex = 0;
+					}
+				}
+				if (fabs(axes[3]) > 0.2) {
+					camera->mouseMoveCamera(axes[3], 0.0, deltaTime);
+				}
+				if (fabs(axes[4]) > 0.2) {
+					camera->mouseMoveCamera(0.0, axes[4], deltaTime);
 				}
 
-			}
-			if (fabs(axes[0]) > 0.2) {
-				modelMatrixMario = glm::rotate(modelMatrixMario,
-					glm::radians(-axes[0] * 0.5f), glm::vec3(0, 1, 0));
-				if (!isJump)
-					animationIndex = 1;
-				else {
+				const unsigned char *buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1,
+					&buttonCount);
+				/*std::cout << "Número de botones disponibles :=>" << buttonCount
+					<< std::endl;*/
+				if (buttons[3] == GLFW_PRESS)
+					std::cout << "Se presiona x" << std::endl;
+				if (!isJump && buttons[0] == GLFW_PRESS) {
+					isJump = true;
+					sourcesPlay[4] = true;
+					startTimeJump = currTime;
+					tmv = 0;
 					animationIndex = 0;
-
 				}
 			}
+			if (tipoControl == 1) {
+				if (fabs(abs(axes[1]) > 0.2)) {
+					modelMatrixMario = glm::translate(modelMatrixMario, glm::vec3(0, 0, axes[1] * 0.1));
+					if (!isJump)
+						animationIndex = 1;
+					else
+						animationIndex = 0;
+				}
+				if (fabs(axes[0]) > 0.2) {
+					modelMatrixMario = glm::rotate(modelMatrixMario, glm::radians(-axes[0] * 0.5f), glm::vec3(0, 1, 0));
+					if (!isJump)
+						animationIndex = 1;
+					else
+						animationIndex = 0;
+				}
 
-			if (fabs(axes[3]) > 0.2) {
-				camera->mouseMoveCamera(axes[3], 0.0, deltaTime);
-			}
-			if (fabs(axes[4]) > 0.2) {
-				camera->mouseMoveCamera(0.0, axes[4], deltaTime);
-			}
+				if (fabs(axes[2]) > 0.2) {
+					camera->mouseMoveCamera(axes[2], 0.0, deltaTime);
+				}
+				if (fabs(axes[3]) > 0.2) {
+					camera->mouseMoveCamera(0, axes[3], deltaTime);
+				}
 
-			const unsigned char *buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1,
-				&buttonCount);
-			std::cout << "Número de botones disponibles :=>" << buttonCount
-				<< std::endl;
-			if (buttons[3] == GLFW_PRESS)
-				std::cout << "Se presiona x" << std::endl;
-
-
-
-			if (!isJump && buttons[0] == GLFW_PRESS) {
-				isJump = true;
-				sourcesPlay[4] = true;
-				startTimeJump = currTime;
-				tmv = 0;
-				animationIndex = 0;
+				const unsigned char * botones = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
+				//std::cout << "Botones disponibles :=>" << buttonCount << std::endl;
+				if (botones[0] == GLFW_PRESS && !isJump) {
+					/*std::cout << "Se presiona A" << std::endl;*/
+					isJump = true;
+					sourcesPlay[4] = true;
+					startTimeJump = currTime;
+					tmv = 0;
+					animationIndex = 0;
+				}
 			}
 		}
 
@@ -1386,14 +1427,12 @@ bool processInput(bool continueApplication) {
 					 if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) { // Se podrían añadir los botones de un control
 						 vivo = true;
 						 muestraFinal = false;
-						 /*resetGame();*/
 					 }
 				 }
 				 else { //Derrota
 					 if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) { // Se podrían añadir los botones de un control
 						 vivo = true;
 						 muestraFinal = false;
-						 /*resetGame();*/
 					 }
 				 }
 			 }
@@ -2066,25 +2105,28 @@ void applicationLoop() {
 
 
 		if (!vivo && principal) { //Inicia el juego y muestra menu principal
-			menuP->render("Presiona Enter para iniciar el juego o presiona Esc para salir", -0.8, -0.5, 24, 1.0, 1.0, 1.0);
+			menuP->render("Enter para iniciar el juego o Esc para salir", -1.0, -0.5, 22, 1.0, 1.0, 1.0);
+			menuP2->render("Presiona 0 para control de Play o 1 para control de Xbox", -1.0, -0.8, 22, 1.0, 1.0, 1.0);
 		}
 		else if (!vivo && !principal) {
 			if (resultadoPartida) {
-				menuP->render("Presiona Enter para intentar ganar de nuevo \no Esc para salir", -0.8, -0.5, 24, 1.0, 1.0, 1.0);
+				damageText->render("Ganaste", 0.0, 0.0, 22, 1.0, 1.0, 1.0);
+				menuP->render("Enter para jugar de nuevo o Esc para salir", -1.0, -0.5, 22, 1.0, 1.0, 1.0);
 			}
 			else {
-				menuP->render("Presiona Enter para intentarlo de nuevo \no Esc para salir", -0.8, -0.5, 24, 1.0, 1.0, 1.0);
+				damageText->render("Perdiste", 0.0, 0.0, 22, 1.0, 1.0, 1.0);
+				menuP->render("Enter para intentar de nuevo o Esc para salir", -1.0, -0.5, 22, 1.0, 1.0, 1.0);
 			}
 		} else {
 			principal = false;
 			if (contador_damage > 0) {
-				modelText->render("Puntuacion " + std::to_string(contador_txt), -1, 0.0, 24, 1.0, 1.0, 1.0);
-				damageText->render("Vida restante: " + std::to_string(contador_damage), -1, 0.8, 24, 1.0, 1.0, 1.0);
+				modelText->render("Puntuacion " + std::to_string(contador_txt), -1, 0.0, 22, 1.0, 1.0, 1.0);
+				damageText->render("Vida restante: " + std::to_string(contador_damage), -1, 0.8, 22, 1.0, 1.0, 1.0);
 			}
 			if (contador_damage <= 0) {
 				muestraFinal = true;
 				resultadoPartida = false;
-				damageText->render("Perdiste", 0.0, 0.0, 24, 1.0, 1.0, 1.0);
+				damageText->render("Perdiste", 0.0, 0.0, 22, 1.0, 1.0, 1.0);
 				//menuP->render("Presiona Enter para intentarlo de nuevo o Esc para salir", -0.8, -0.5, 24, 1.0, 1.0, 1.0);
 				vivo = false; //Bloquea controles
 				resetGame();
@@ -2094,7 +2136,7 @@ void applicationLoop() {
 				resultadoPartida = true;
 				vivo = false; //Bloquea controles
 				//menuP->render("Presiona Enter para intentar ganar de nuevo o Esc para salir", -0.8, -0.5, 24, 1.0, 1.0, 1.0);
-				damageText->render("Ganaste", 0.0, 0.0, 24, 1.0, 1.0, 1.0);
+				damageText->render("Ganaste", 0.0, 0.0, 22, 1.0, 1.0, 1.0);
 				resetGame();
 			}
 		}
