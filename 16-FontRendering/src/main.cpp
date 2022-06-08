@@ -95,8 +95,12 @@ ShadowBox *shadowBox;
 // Models complex instances
 Model modelEnemy;
 
+//Arboles
+Model modelArbol;
+
 //estrellas
 Model modelEstrella;
+
 
 //monedas
 Model modelMoneda;
@@ -146,6 +150,7 @@ int lastMousePosY, offsetY = 0;
 glm::mat4 modelMatrixEnemy = glm::mat4(1.0);
 glm::mat4 modelMatrixMario = glm::mat4(1.0f);
 glm::mat4 modelMatrixFountain = glm::mat4(1.0f);
+glm::mat4 modelMatrixArbol = glm::mat4(1.0);
 
 int animationIndex = 2;
 int modelSelected = 2;
@@ -166,8 +171,10 @@ float EnemySteep = 0.0;
 
 //Estrellas posicion
 
-std::vector<glm::vec3> estrellaPosition = { glm::vec3(-7.03, 0, -16.14), glm::vec3(
-		24.41, 0, -32.57), glm::vec3(-10.15, 0, -52.10) };
+std::vector<glm::vec3> estrellaPosition = { 
+	glm::vec3(-7.03, 0, -16.14), 
+	glm::vec3(24.41, 0, -32.57), 
+	glm::vec3(-10.15, 0, -52.10) };
 std::vector<float> estrellaOrientation = { 21.37 + 90, -65.0 + 90 };
 
 // monedas positions
@@ -182,6 +189,9 @@ std::vector<glm::vec3> enemyPosition2 = { glm::vec3(0, 0, -20), glm::vec3(0,0,-3
 // Enemy renders
 bool enemyRender[3] = { true, true, true };
 bool enemyRender2[3] = { true, true, true };
+
+//Arbol position
+std::vector<glm::vec3> arbolPosition = { glm::vec3(0, 0, -19), glm::vec3(0,0,-30), glm::vec3(0,0,-50) };
 
 // Blending model unsorted
 std::map<std::string, glm::vec3> blendingUnsorted = { { "fountain", glm::vec3(5.0, 0.0, -40.0) }, { "fire", glm::vec3(0.0, 0.0, 7.0) } };
@@ -521,6 +531,10 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelEnemy.loadModel("../models/tortuga/tortuga1.fbx");
 	modelEnemy.setShader(&shaderMulLighting);
 
+	//arboles
+	modelArbol.loadModel("../models/arbol/arbol.fbx");
+	modelArbol.setShader(&shaderMulLighting);
+
 	terrain.init();
 	terrain.setShader(&shaderTerrain);
 	terrain.setPosition(glm::vec3(100, 0, 100));
@@ -538,7 +552,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelGrass.setShader(&shaderMulLighting);
 
 	//Fountain
-	modelFountain.loadModel("../models/fountain/fountain.obj");
+	modelFountain.loadModel("../models/hidrante/hidrante.fbx");
 	modelFountain.setShader(&shaderMulLighting);
 
 	//Mario
@@ -1127,6 +1141,9 @@ void destroy() {
 
 	modelEnemy.destroy();
 
+	//arbol
+	modelArbol.destroy();
+
 	//estrellas
 	modelEstrella.destroy();
 	//monedas
@@ -1242,16 +1259,21 @@ bool processInput(bool continueApplication) {
 					glm::vec3(0, 0, -axes[1] * 0.1));
 			if (!isJump)
 				animationIndex = 1;
-			else
+			else {
 				animationIndex = 0;
+				sourcesPlay[4] = true;
+			}
+				
 		}
 		if (fabs(axes[0]) > 0.2) {
 			modelMatrixMario = glm::rotate(modelMatrixMario,
 					glm::radians(-axes[0] * 0.5f), glm::vec3(0, 1, 0));
 			if (!isJump)
 				animationIndex = 1;
-			else
+			else {
 				animationIndex = 0;
+				sourcesPlay[4] = true;
+			}
 		}
 
 		if (fabs(axes[3]) > 0.2) {
@@ -1265,8 +1287,10 @@ bool processInput(bool continueApplication) {
 				&buttonCount);
 		std::cout << "Número de botones disponibles :=>" << buttonCount
 				<< std::endl;
-		if (buttons[0] == GLFW_PRESS)
+		if (buttons[3] == GLFW_PRESS)
 			std::cout << "Se presiona x" << std::endl;
+
+
 
 		if (!isJump && buttons[0] == GLFW_PRESS) {
 			isJump = true;
@@ -1535,10 +1559,10 @@ void applicationLoop() {
 			glm::vec3 estrellaPosition = glm::vec3(matrixAdjustEstrella[3]);
 			shaderMulLighting.setVectorFloat3(
 				"pointLights[" + std::to_string(i) + "].light.ambient",
-				glm::value_ptr(glm::vec3(0.3,0.7, 2)));
+				glm::value_ptr(glm::vec3(0.5,1,1)));
 			shaderMulLighting.setVectorFloat3(
 				"pointLights[" + std::to_string(i) + "].light.diffuse",
-				glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
+				glm::value_ptr(glm::vec3(0.5,1,1)));
 			shaderMulLighting.setVectorFloat3(
 				"pointLights[" + std::to_string(i) + "].light.specular",
 				glm::value_ptr(glm::vec3(1,1,1)));
@@ -1548,15 +1572,15 @@ void applicationLoop() {
 			shaderMulLighting.setFloat(
 				"pointLights[" + std::to_string(i) + "].constant", 1.0);
 			shaderMulLighting.setFloat(
-				"pointLights[" + std::to_string(i) + "].linear", 0.9);
+				"pointLights[" + std::to_string(i) + "].linear", 0.09);
 			shaderMulLighting.setFloat(
 				"pointLights[" + std::to_string(i) + "].quadratic", 0.01);
 			shaderTerrain.setVectorFloat3(
 				"pointLights[" + std::to_string(i) + "].light.ambient",
-				glm::value_ptr(glm::vec3(0.3, 0.7, 2)));
+				glm::value_ptr(glm::vec3(0.5,1,1)));
 			shaderTerrain.setVectorFloat3(
 				"pointLights[" + std::to_string(i) + "].light.diffuse",
-				glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
+				glm::value_ptr(glm::vec3(0.5, 1, 1)));
 			shaderTerrain.setVectorFloat3(
 				"pointLights[" + std::to_string(i) + "].light.specular",
 				glm::value_ptr(glm::vec3(1,1,1)));
@@ -1566,7 +1590,7 @@ void applicationLoop() {
 			shaderTerrain.setFloat(
 				"pointLights[" + std::to_string(i) + "].constant", 1.0);
 			shaderTerrain.setFloat(
-				"pointLights[" + std::to_string(i) + "].linear", 0.9);
+				"pointLights[" + std::to_string(i) + "].linear", 0.09);
 			shaderTerrain.setFloat(
 				"pointLights[" + std::to_string(i) + "].quadratic", 0.01);
 		}
@@ -1590,15 +1614,25 @@ void applicationLoop() {
 		for (int i = 0; i < enemyPosition.size(); i++) {
 			glm::mat4 matrixAdjustEnemigo = glm::mat4(1.0f);
 			matrixAdjustEnemigo = glm::translate(matrixAdjustEnemigo, enemyPosition[i]);
-			matrixAdjustEnemigo = glm::translate(matrixAdjustEnemigo, glm::vec3(0, 0, 0));
+			//matrixAdjustEnemigo = glm::translate(matrixAdjustEnemigo, glm::vec3(0, 0, 0));
 			glm::vec3 enemyPosition = glm::vec3(matrixAdjustEnemigo[3]);
 		}
 		for (int i = 0; i < enemyPosition2.size(); i++) {
 			glm::mat4 matrixAdjustEnemigo2 = glm::mat4(1.0f);
 			matrixAdjustEnemigo2 = glm::translate(matrixAdjustEnemigo2, enemyPosition2[i]);
-			matrixAdjustEnemigo2 = glm::translate(matrixAdjustEnemigo2, glm::vec3(0, 0, 0));
+			//matrixAdjustEnemigo2 = glm::translate(matrixAdjustEnemigo2, glm::vec3(0, 0, 0));
 			glm::vec3 enemyPosition2 = glm::vec3(matrixAdjustEnemigo2[3]);
 		}
+
+		//posicion arboles
+		
+		for (int i = 0; i < arbolPosition.size(); i++) {
+			glm::mat4 matrixAdjustArbol = glm::mat4(1.0f);
+			matrixAdjustArbol = glm::translate(matrixAdjustArbol, arbolPosition[i]);
+			//matrixAdjustEnemigo = glm::translate(matrixAdjustEnemigo, glm::vec3(0, 0, 0));
+			glm::vec3 arbolPosition = glm::vec3(matrixAdjustArbol[3]);
+		}
+
 
 
 		/*******************************************
@@ -1718,6 +1752,28 @@ void applicationLoop() {
 			enemyCollider2.c = glm::vec3(modelMatrixColliderEnemy2[3]);
 			enemyCollider2.ratio = modelEnemy.getSbb().ratio*0.5;
 			std::get<0>(collidersSBB.find("enemx" + std::to_string(i))->second) = enemyCollider2;
+		}
+
+
+		// arbolcollider
+		for (int i = 0; i < arbolPosition.size(); i++) {
+			AbstractModel::OBB arbolCollider;
+			glm::mat4 modelMatrixColliderArbol = glm::mat4(1.0);
+			modelMatrixColliderArbol = glm::translate(modelMatrixColliderArbol,arbolPosition[i]);
+			//modelMatrixColliderArbol = glm::rotate(modelMatrixColliderArbol, glm::radians(lamp1Orientation[i]), glm::vec3(0, 1, 0));
+			addOrUpdateColliders(collidersOBB, "arbol" + std::to_string(i), arbolCollider, modelMatrixColliderArbol);
+			// Set the orientation of collider before doing the scale
+			arbolCollider.u = glm::quat_cast(modelMatrixColliderArbol);
+			//modelMatrixColliderArbol = glm::scale(modelMatrixColliderArbol, glm::vec3(0.2, 1, 0.2));
+			
+			modelMatrixColliderArbol = glm::translate(modelMatrixColliderArbol,
+					glm::vec3(modelArbol.getObb().c.x+0.1, //atras
+						modelArbol.getObb().c.y, //altura
+						modelArbol.getObb().c.z-0.15));
+				;
+			arbolCollider.c = glm::vec3(modelMatrixColliderArbol[3]);
+			arbolCollider.e = modelArbol.getObb().e * glm::vec3(0.2, 1, 0.2);
+			std::get<0>(collidersOBB.find("arbol" + std::to_string(i))->second) = arbolCollider;
 		}
 
 		//Collider del enemigo/*
@@ -2032,6 +2088,10 @@ void prepareScene() {
 	//Enemigo
 	modelEnemy.setShader(&shaderMulLighting);
 
+	//arboles
+	//Enemigo
+	modelArbol.setShader(&shaderMulLighting);
+
 	terrain.setShader(&shaderTerrain);
 
 	//estrellas
@@ -2055,6 +2115,9 @@ void prepareDepthScene() {
 
 	//enemy
 	modelEnemy.setShader(&shaderDepth);
+
+	//arbol
+	modelArbol.setShader(&shaderDepth);
 
 	terrain.setShader(&shaderDepth);
 
@@ -2158,6 +2221,19 @@ void renderScene(bool renderParticles) {
 		}
 	}
 
+
+	//arboles render
+	for (int i = 0; i < arbolPosition.size(); i++) {
+		arbolPosition[i].y = terrain.getHeightTerrain(arbolPosition[i].x,
+			arbolPosition[i].z);
+		modelArbol.setPosition(arbolPosition[i]);
+		//modelArbol.setScale(glm::vec3(0.5, 0.5, 0.5));
+		//modelArbol.setOrientation(glm::vec3(0, arbolOrientation[i], 0));
+		modelArbol.render();
+	}
+
+
+
 	////Enemy render
 
 	//modelMatrixEnemy[3][1] = terrain.getHeightTerrain(modelMatrixEnemy[3][0],
@@ -2259,7 +2335,7 @@ void renderScene(bool renderParticles) {
 					modelMatrixParticlesFountain, it->second.second);
 			modelMatrixParticlesFountain[3][1] = terrain.getHeightTerrain(
 					modelMatrixParticlesFountain[3][0],
-					modelMatrixParticlesFountain[3][2]) + 0.36 * 10.0;
+					modelMatrixParticlesFountain[3][2]) + 0.25 * 10.0;
 			modelMatrixParticlesFountain = glm::scale(
 					modelMatrixParticlesFountain, glm::vec3(3.0, 3.0, 3.0));
 			currTimeParticlesAnimation = TimeManager::Instance().GetTime();
