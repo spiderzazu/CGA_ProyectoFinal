@@ -80,6 +80,8 @@ Shader shaderParticlesFire;
 Shader shaderViewDepth;
 //Shader para dibujar el buffer de profunidad
 Shader shaderDepth;
+//Shader para dibujar objeto con solo textura
+Shader shaderTexture;
 
 std::shared_ptr<Camera> camera(new ThirdPersonCamera());
 float distanceFromTarget = 7.0;
@@ -89,14 +91,12 @@ Box boxCollider;
 Sphere sphereCollider(10, 10);
 Box boxViewDepth;
 Box boxLightViewBox;
+Box boxMenu;
 
 ShadowBox *shadowBox;
 
 //Game Variables
-bool vivo = false;
-bool muestraFinal = false;
-bool principal = true;
-bool resultadoPartida = false;
+bool vivo = false, muestraFinal = false, principal = true, resultadoPartida = false, onSalida = false;
 float dificultad = 0.1;
 
 //Control type
@@ -141,6 +141,7 @@ GLuint textureTerrainBackgroundID, textureTerrainRID, textureTerrainGID,
 		textureTerrainBID, textureTerrainBlendMapID;
 GLuint textureParticleFountainID, textureParticleFireID, texId;
 GLuint skyboxTextureID;
+GLuint textureMenu0_Ini, textureMenu0_Out, textureMenu1_Ini, textureMenu1_Out, textureGO_Ini, textureGO_Out, textureWin_Ini, textureWin_Out, textureActivaID;
 
 // Modelo para el redener de texto
 FontTypeRendering::FontTypeRendering *modelText;
@@ -183,11 +184,11 @@ bool enableCountSelected = true;
 int contador_txt=0;
 int contador_damage = 5;
 
-// Variables to animations keyframes
-bool saveFrame = false, availableSave = true;
-std::ofstream myfile;
-std::string fileName = "";
-bool record = false;
+//// Variables to animations keyframes
+//bool saveFrame = false, availableSave = true;
+//std::ofstream myfile;
+//std::string fileName = "";
+//bool record = false;
 
 // Var animate enemy
 int stateEnemy = 0;
@@ -656,6 +657,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 			"../Shaders/texturizado_depth_view.fs");
 	shaderDepth.initialize("../Shaders/shadow_mapping_depth.vs",
 			"../Shaders/shadow_mapping_depth.fs");
+	shaderTexture.initialize("../Shaders/texturizado.vs", "../Shaders/texturizado.fs");
 
 	// Inicializacion de los objetos.
 	skyboxSphere.init();
@@ -719,6 +721,10 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	//Menu
 	menuImage.loadModel("../models/menu/menu.fbx");
 	menuImage.setShader(&shaderMulLighting);
+
+	boxMenu.init();
+	boxMenu.setShader(&shaderTexture);
+	boxMenu.setScale(glm::vec3(2.0, 2.0, 1.0));
 
 	camera->setPosition(glm::vec3(0.0, 0.0, 10.0));
 	camera->setDistanceFromTarget(distanceFromTarget);
@@ -949,6 +955,166 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	} else
 		std::cout << "Failed to load texture" << std::endl;
 	textureParticleFire.freeImage(bitmap);
+
+	Texture textureMenu1("../Textures/M0_in.jpg");
+	bitmap = textureMenu1.loadImage();
+	data = textureMenu1.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &textureMenu0_Ini);
+	glBindTexture(GL_TEXTURE_2D, textureMenu0_Ini);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
+			GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	textureMenu1.freeImage(bitmap);
+
+	Texture textureMenu2("../Textures/M0_out.jpg");
+	bitmap = textureMenu2.loadImage();
+	data = textureMenu2.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &textureMenu0_Out);
+	glBindTexture(GL_TEXTURE_2D, textureMenu0_Out);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
+			GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	textureMenu2.freeImage(bitmap);
+
+	Texture textureMenu3("../Textures/M1_in.jpg");
+	bitmap = textureMenu3.loadImage();
+	data = textureMenu3.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &textureMenu1_Ini);
+	glBindTexture(GL_TEXTURE_2D, textureMenu1_Ini);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
+			GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	textureMenu3.freeImage(bitmap);
+
+	Texture textureMenu4("../Textures/M1_out.jpg");
+	bitmap = textureMenu4.loadImage();
+	data = textureMenu4.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &textureMenu1_Out);
+	glBindTexture(GL_TEXTURE_2D, textureMenu1_Out);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
+			GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	textureMenu4.freeImage(bitmap);
+
+	Texture textureGO1("../Textures/GO_in.jpg");
+	bitmap = textureGO1.loadImage();
+	data = textureGO1.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &textureGO_Ini);
+	glBindTexture(GL_TEXTURE_2D, textureGO_Ini);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
+			GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	textureGO1.freeImage(bitmap);
+
+	Texture textureGO2("../Textures/GO_out.jpg");
+	bitmap = textureGO2.loadImage();
+	data = textureGO2.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &textureGO_Out);
+	glBindTexture(GL_TEXTURE_2D, textureGO_Out);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
+			GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	textureGO2.freeImage(bitmap);
+
+	Texture textureWin1("../Textures/Win_in.jpg");
+	bitmap = textureWin1.loadImage();
+	data = textureWin1.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &textureWin_Ini);
+	glBindTexture(GL_TEXTURE_2D, textureWin_Ini);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
+			GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	textureWin1.freeImage(bitmap);
+
+	Texture textureWin2("../Textures/Win_out.jpg");
+	bitmap = textureWin2.loadImage();
+	data = textureWin2.convertToData(bitmap, imageWidth, imageHeight);
+	glGenTextures(1, &textureWin_Out);
+	glBindTexture(GL_TEXTURE_2D, textureWin_Out);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
+			GL_BGRA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+		std::cout << "Failed to load texture" << std::endl;
+	textureWin2.freeImage(bitmap);
 
 	std::uniform_real_distribution<float> distr01 =
 			std::uniform_real_distribution<float>(0.0f, 1.0f);
@@ -1182,6 +1348,15 @@ void destroy() {
 	glDeleteTextures(1, &textureTerrainBlendMapID);
 	glDeleteTextures(1, &textureParticleFountainID);
 	glDeleteTextures(1, &textureParticleFireID);
+	//glDeleteTextures(1, &textureMenu0_Out);
+	//glDeleteTextures(1, &textureMenu0_Ini);
+	//glDeleteTextures(1, &textureMenu1_Out);
+	//glDeleteTextures(1, &textureMenu1_Ini);
+	//glDeleteTextures(1, &textureWin_Out);
+	//glDeleteTextures(1, &textureWin_Ini);
+	//glDeleteTextures(1, &textureGO_Out);
+	//glDeleteTextures(1, &textureGO_Ini);
+
 
 	// Cube Maps Delete
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
@@ -1260,7 +1435,11 @@ bool processInput(bool continueApplication) {
 		tipoControl = 0;
 	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
 		tipoControl = 1;
-
+	//Movimiento menú
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+		onSalida = false;
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+		onSalida = true;
 	if (vivo) {
 		if (glfwJoystickPresent(GLFW_JOYSTICK_1) == GL_TRUE) {
 			//std::cout << "Esta presente el joystick" << std::endl;
@@ -1357,13 +1536,6 @@ bool processInput(bool continueApplication) {
 		offsetX = 0;
 		offsetY = 0;
 
-		if (availableSave && glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
-			saveFrame = true;
-			availableSave = false;
-		}
-		if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_RELEASE)
-			availableSave = true;
-
 		if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
 			modelMatrixMario = glm::rotate(modelMatrixMario, glm::radians(1.0f),
 				glm::vec3(0, 1, 0));
@@ -1411,26 +1583,58 @@ bool processInput(bool continueApplication) {
 			animationIndex = 0;
 		}
 	}   else {
+			bool keyEnterStatus = glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS;
 			 //Activar bool que muestre texto
 			 if (principal) {
-				 //Mostramos textos del menú principal
-				 if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) { // Se podrían añadir los botones de un control
-					 vivo = true;
+				 if (!onSalida && tipoControl == 0) //Start and PS
+					 textureActivaID = textureMenu0_Ini;
+				 else if (!onSalida && tipoControl == 1)  //Start and Xbox
+					 textureActivaID = textureMenu1_Ini;
+				 else if (onSalida && tipoControl == 0)  //Exit and PS
+					 textureActivaID = textureMenu0_Out;
+				 else if (onSalida && tipoControl == 1)  //Exit and Xbox
+					 textureActivaID = textureMenu1_Out;
+				 else 
+					 textureActivaID = textureMenu0_Ini;
+
+				 if (keyEnterStatus) { // Se podrían añadir los botones de un control
+					 if (onSalida)
+						exitApp = true;
+					 else
+						vivo = true;
+					 keyEnterStatus = false;
 				 }
 			 }
 			 else if (muestraFinal) {
 				 //Mostramos textos del GameOver Victoria
-				 
 				 if (resultadoPartida) { //Victoria
-					 if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) { // Se podrían añadir los botones de un control
-						 vivo = true;
-						 muestraFinal = false;
+					 if (!onSalida)
+						 textureActivaID = textureWin_Ini;
+					 else
+						 textureActivaID = textureWin_Out;
+					 if (keyEnterStatus) { // Se podrían añadir los botones de un control
+						 if (!onSalida) {
+							 vivo = true;
+							 muestraFinal = false;
+						 }
+						 else
+							 exitApp = true;
+						 keyEnterStatus = false;
 					 }
 				 }
 				 else { //Derrota
-					 if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) { // Se podrían añadir los botones de un control
-						 vivo = true;
-						 muestraFinal = false;
+					 if (!onSalida)
+						 textureActivaID = textureGO_Ini;
+					 else
+						 textureActivaID = textureGO_Out;
+					 if (keyEnterStatus) { // Se podrían añadir los botones de un control
+						 if (!onSalida) {
+							 vivo = true;
+							 muestraFinal = false;
+						 }
+						 else
+							 exitApp = true;
+						 keyEnterStatus = false;
 					 }
 				 }
 			 }
@@ -1509,6 +1713,8 @@ void applicationLoop() {
 	glm::vec3 lightPos = glm::vec3(10.0, 10.0, 0.0);
 
 	shadowBox = new ShadowBox(-lightPos, camera.get(), 15.0f, 0.1f, 45.0f);
+
+	textureActivaID = textureMenu0_Ini;
 
 	while (psi) {
 		currTime = TimeManager::Instance().GetTime();
@@ -1780,7 +1986,18 @@ void applicationLoop() {
 			glm::vec3 SnowmanPosition = glm::vec3(matrixAdjustSnowman[3]);
 		}
 
-
+		if (!vivo) {
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glViewport(0, 0, screenWidth, screenHeight);
+			shaderTexture.setMatrix4("projection", 1, false, glm::value_ptr(glm::mat4(1.0)));
+			shaderTexture.setMatrix4("view", 1, false, glm::value_ptr(glm::mat4(1.0)));
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, textureActivaID);
+			shaderTexture.setInt("outTexture", 0);
+			boxMenu.render();
+			glfwSwapBuffers(window);
+			continue;
+		}
 
 		/*******************************************
 		 * 1.- We render the depth buffer
@@ -2195,8 +2412,8 @@ void applicationLoop() {
 
 		//coordenadas
 
-		std::cout << "x" << modelMatrixMario[3].x << std::endl;
-		std::cout << "z" << modelMatrixMario[3].z << std::endl;
+		/*std::cout << "x" << modelMatrixMario[3].x << std::endl;
+		std::cout << "z" << modelMatrixMario[3].z << std::endl;*/
 			
 		
 
@@ -2233,15 +2450,15 @@ void applicationLoop() {
 			break;
 		}
 
-
+		//Quitar menu Render
 		if (!vivo && principal) { //Inicia el juego y muestra menu principal
-			menuP->render("Mision", -0.25, 0.7, 48,0.77,0.31,0.09);
-			menuP->render("Encuentra las 9 monedas", -0.75, 0.25, 36, 0.77, 0.31, 0.09);
+			//menuP->render("Mision", -0.25, 0.7, 48,0.77,0.31,0.09);
+			//menuP->render("Encuentra las 9 monedas", -0.75, 0.25, 36, 0.77, 0.31, 0.09);
 
-			menuP->render("Enter para iniciar el juego o Esc para salir", -0.75, -0.3, 22, 0.21, 0.39, 0.81);
-			menuP2->render("Presiona", -0.75, -0.5, 22, 0.21, 0.39, 0.81);
-			menuP2->render("0 para control de Play", -0.75, -0.6, 22, 0.21, 0.39, 0.81);
-			menuP2->render("1 para control de Xbox", -0.75, -0.7, 22, 0.21, 0.39, 0.81);
+			//menuP->render("Enter para iniciar el juego o Esc para salir", -0.75, -0.3, 22, 0.21, 0.39, 0.81);
+			//menuP2->render("Presiona", -0.75, -0.5, 22, 0.21, 0.39, 0.81);
+			//menuP2->render("0 para control de Play", -0.75, -0.6, 22, 0.21, 0.39, 0.81);
+			//menuP2->render("1 para control de Xbox", -0.75, -0.7, 22, 0.21, 0.39, 0.81);
 
 
 			//menuP2->render("Mision: Encuentra las 9 monedas", -1.0, -0.8, 22, 1.0, 1.0, 1.0);
