@@ -98,6 +98,7 @@ bool muestraFinal = false;
 bool principal = true;
 bool resultadoPartida = false;
 float dificultad = 0.1;
+int maxmonedas = 11;
 
 //Control type
 int tipoControl = 0;
@@ -132,6 +133,8 @@ Model menuImage;
 // 
 // Mario
 Model marioModelAnimate;
+
+
 // Terrain model instance
 Terrain terrain(-1, -1, 250, 16, "../Textures/Terreno.png");
 
@@ -205,13 +208,14 @@ std::vector<glm::vec3> estrellaPosition = {
 	glm::vec3(-43.5,0,-143.5)
 	
 };
+
+
 std::vector<float> estrellaOrientation = { 21.37 + 90, -65.0 + 90 };
 
 // monedas positions
 std::vector<glm::vec3> monedaPosition = {
 
 	glm::vec3(80,0,19),
-
 	glm::vec3(20, 0, -54.10),
 	glm::vec3(-53.9, 0, -35.20),
 	glm::vec3(-38.4,0,32.9),
@@ -219,12 +223,24 @@ std::vector<glm::vec3> monedaPosition = {
 	glm::vec3(3.6,0,-99.9),
 	glm::vec3(-129,0,-29),
 	glm::vec3(39,0,22),
-	glm::vec3(0,0,0)
+	glm::vec3(-0.32,0,-46.16),
+	glm::vec3(88,0,-141),
+	glm::vec3(-96.1,0,70.3),
+	glm::vec3(-91.1,0,-57.4),
+	glm::vec3(5.0, 0.0, -40.0),
+	glm::vec3(0,0,2),
+	glm::vec3(0,0,3),
+	glm::vec3(0,0,4),
+	glm::vec3(0,0,5),
+	glm::vec3(0,0,6),
+	glm::vec3(0,0,7),
+
 };
+//bool monedasRender[19] = {false,false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
 
 
 //monedas render
-bool monedasRender[9] = { true,true,true,true, true, true,true,true, true};
+bool monedasRender[19] = { true,true,true,true, true, true,true,true, true,true,true,true,true, true, true,true,true, true,true };
 
 // Enemy positions
 std::vector<glm::vec3> enemyPosition = { 
@@ -237,6 +253,19 @@ std::vector<glm::vec3> enemyPosition = {
 	glm::vec3(-129,0,-28.5),
 	glm::vec3(39,0,22.5),
 	//glm::vec3(0,0,0.5)
+	glm::vec3(-0.32,0,-45.66),
+	glm::vec3(88,0,-140.5),
+	glm::vec3(-96.1,0,70.8),
+	glm::vec3(-91.1,0,-56.9),
+
+	glm::vec3(28,0,85),
+	glm::vec3(-58,0,-90.43),
+
+	glm::vec3(34,0,-14),
+	glm::vec3(36,0,-16),
+	glm::vec3(38,0,-18),
+	glm::vec3(40,0,-20),
+	glm::vec3(42,0,-22)
 
 };
 std::vector<glm::vec3> enemyPosition2 = { 
@@ -249,6 +278,16 @@ std::vector<glm::vec3> enemyPosition2 = {
 	glm::vec3(-128.5,0,-29),
 	glm::vec3(39.5,0,22),
 	//glm::vec3(0.5,0,0),
+	glm::vec3(0.18,0,-46.16),
+	glm::vec3(88.5,0,-141),
+	glm::vec3(-95.6,0,70.3),
+	glm::vec3(-90.6,0,-57.4),
+
+
+	glm::vec3(28,0,85.5),
+	glm::vec3(-58,0,-89.93),
+
+
 
 
 };
@@ -263,6 +302,17 @@ std::vector<glm::vec3> enemyPosition3 = {
 	glm::vec3(-129,0,-29.5),
 	glm::vec3(39,0,21.5),
 	//glm::vec3(0,0,-0.5)
+	glm::vec3(-0.32,0,-46.66),
+	glm::vec3(88,0,-141.5),
+	glm::vec3(-96.1,0,69.8),
+	glm::vec3(-91.1,0,-57.9),
+
+
+	glm::vec3(28.5,0,85),
+	glm::vec3(-57.5,0,-90.43),
+
+
+
 
 };
 
@@ -276,6 +326,16 @@ std::vector<glm::vec3> enemyPosition4 = {
 	glm::vec3(-129.5,0,-29),
 	glm::vec3(38.5,0,22),
 	//glm::vec3(-0.5,0,0)
+	glm::vec3(-0.82,0,-46.16),
+	glm::vec3(87.5,0,-141),
+	glm::vec3(-96.6,0,70.3),
+	glm::vec3(-91.6,0,-57.4),
+
+	glm::vec3(28,0,84.5),
+	glm::vec3(-58,0,-90.93),
+
+
+
 
 };
 
@@ -285,10 +345,10 @@ std::vector<glm::vec3> enemyPosition4 = {
 //bool enemyRender2[9] = { true, true, true,true, true, true,true, true, true};
 //bool enemyRender3[9] = { true, true, true,true, true, true,true, true, true };
 //bool enemyRender4[9] = { true, true, true,true, true, true,true, true, true};
-bool enemyRender[8] = { true, true, true,true, true, true,true, true };
-bool enemyRender2[8] = { true, true, true,true, true, true,true, true};
-bool enemyRender3[8] = { true, true, true,true, true, true,true, true };
-bool enemyRender4[8] = { true, true, true,true, true, true,true, true };
+bool enemyRender[19] = { true,true,true,true, true, true,true,true, true,true,true,true,true, true, true,true,true, true,true };
+bool enemyRender2[15] = { true, true, true,true, true, true,true, true, true, true,true, true, true,true, true };
+bool enemyRender3[15] = { true, true, true,true, true, true,true, true, true, true,true, true, true,true, true };
+bool enemyRender4[15] = { true, true, true,true, true, true,true, true, true, true,true, true, true,true, true };
 
 //Arbol position
 std::vector<glm::vec3> arbolPosition = { 
@@ -310,7 +370,7 @@ std::vector<glm::vec3> arbolPosition = {
 	glm::vec3(33,0,58),
 	glm::vec3(17,0,-66),
 	glm::vec3(61,0,-25),
-	glm::vec3(40,0,-22),
+	glm::vec3(44,0,-10),
 	glm::vec3(46,0,65),
 	glm::vec3(-49,0,85),
 	glm::vec3(-45,0,-37),
@@ -336,7 +396,7 @@ std::vector<glm::vec3> snowmanPosition = {
 
 std::vector<glm::vec3> trineoPosition = {
 	glm::vec3(-105,0,-136),
-	glm::vec3(22.4,0,54),
+	glm::vec3(25.4,0,60),
 	glm::vec3(-100,0,83.6)
 
 };
@@ -1865,8 +1925,13 @@ void applicationLoop() {
 				glm::mat4 modelMatrixColliderMoneda = glm::mat4(1.0);
 				modelMatrixColliderMoneda = glm::translate(modelMatrixColliderMoneda,
 					monedaPosition[i]);
-				addOrUpdateColliders(collidersOBB, "moneda" + std::to_string(i),
-					monedaCollider, modelMatrixColliderMoneda);
+				if (i <= 9) {
+					addOrUpdateColliders(collidersOBB, "moneda0" + std::to_string(i), monedaCollider, modelMatrixColliderMoneda);
+				}
+				else {
+					addOrUpdateColliders(collidersOBB, "moneda" + std::to_string(i), monedaCollider, modelMatrixColliderMoneda);
+				}
+					
 				// Set the orientation of collider before doing the scale
 				monedaCollider.u = glm::quat_cast(modelMatrixColliderMoneda);
 				//modelMatrixColliderMoneda = glm::scale(modelMatrixColliderMoneda,
@@ -1875,8 +1940,12 @@ void applicationLoop() {
 					modelMoneda.getObb().c);
 				monedaCollider.c = glm::vec3(modelMatrixColliderMoneda[3]);
 				monedaCollider.e = modelMoneda.getObb().e * glm::vec3(0.5, 0.5, 0.5);
-				std::get<0>(collidersOBB.find("moneda" + std::to_string(i))->second) =
-					monedaCollider;
+				if (i <= 9) {
+					std::get<0>(collidersOBB.find("moneda0" + std::to_string(i))->second) = monedaCollider;
+				}
+				else {
+					std::get<0>(collidersOBB.find("moneda" + std::to_string(i))->second) = monedaCollider;
+				}
 		}
 
 		//enemy colliders
@@ -1884,41 +1953,89 @@ void applicationLoop() {
 			AbstractModel::SBB enemyCollider;
 			glm::mat4 modelMatrixColliderEnemy = glm::mat4(1.0);
 			modelMatrixColliderEnemy = glm::translate(modelMatrixColliderEnemy, enemyPosition[i]);
-			addOrUpdateColliders(collidersSBB, "enemy" + std::to_string(i), enemyCollider, modelMatrixColliderEnemy);
+			if (i <= 9) {
+				addOrUpdateColliders(collidersSBB, "enemy0" + std::to_string(i), enemyCollider, modelMatrixColliderEnemy);
+			}
+			else {
+				addOrUpdateColliders(collidersSBB, "enemy" + std::to_string(i), enemyCollider, modelMatrixColliderEnemy);
+			}
 			modelMatrixColliderEnemy = glm::translate(modelMatrixColliderEnemy, glm::vec3(modelEnemy.getSbb().c.x, modelEnemy.getSbb().c.y, modelEnemy.getSbb().c.z + EnemySteep));
 			enemyCollider.c = glm::vec3(modelMatrixColliderEnemy[3]);
 			enemyCollider.ratio = modelEnemy.getSbb().ratio*0.5;
-			std::get<0>(collidersSBB.find("enemy" + std::to_string(i))->second) = enemyCollider;
+			if (i <= 9) {
+				std::get<0>(collidersSBB.find("enemy0" + std::to_string(i))->second) = enemyCollider;
+			}
+			else {
+				std::get<0>(collidersSBB.find("enemy" + std::to_string(i))->second) = enemyCollider;
+			}
 		}
 		for (int i = 0; i < enemyPosition2.size(); i++) {
 			AbstractModel::SBB enemyCollider2;
 			glm::mat4 modelMatrixColliderEnemy2 = glm::mat4(1.0);
 			modelMatrixColliderEnemy2 = glm::translate(modelMatrixColliderEnemy2, enemyPosition2[i]);
-			addOrUpdateColliders(collidersSBB, "enemx" + std::to_string(i), enemyCollider2, modelMatrixColliderEnemy2);
+			if (i <= 9) {
+				addOrUpdateColliders(collidersSBB, "enemx0" + std::to_string(i), enemyCollider2, modelMatrixColliderEnemy2);
+			}
+			else {
+				addOrUpdateColliders(collidersSBB, "enemx" + std::to_string(i), enemyCollider2, modelMatrixColliderEnemy2);
+
+			}
 			modelMatrixColliderEnemy2 = glm::translate(modelMatrixColliderEnemy2, glm::vec3(modelEnemy.getSbb().c.x + EnemySteep, modelEnemy.getSbb().c.y, modelEnemy.getSbb().c.z));
 			enemyCollider2.c = glm::vec3(modelMatrixColliderEnemy2[3]);
 			enemyCollider2.ratio = modelEnemy.getSbb().ratio*0.5;
-			std::get<0>(collidersSBB.find("enemx" + std::to_string(i))->second) = enemyCollider2;
+			if (i <= 9) {
+				std::get<0>(collidersSBB.find("enemx0" + std::to_string(i))->second) = enemyCollider2;
+			}
+			else {
+				std::get<0>(collidersSBB.find("enemx" + std::to_string(i))->second) = enemyCollider2;
+
+			}
 		}
 		for (int i = 0; i < enemyPosition3.size(); i++) {
 			AbstractModel::SBB enemyCollider3;
 			glm::mat4 modelMatrixColliderEnemy3 = glm::mat4(1.0);
 			modelMatrixColliderEnemy3 = glm::translate(modelMatrixColliderEnemy3, enemyPosition3[i]);
-			addOrUpdateColliders(collidersSBB, "enem-y" + std::to_string(i), enemyCollider3, modelMatrixColliderEnemy3);
+			if (i <= 9) {
+				addOrUpdateColliders(collidersSBB, "enem-y0" + std::to_string(i), enemyCollider3, modelMatrixColliderEnemy3);
+			}
+			else {
+				addOrUpdateColliders(collidersSBB, "enem-y" + std::to_string(i), enemyCollider3, modelMatrixColliderEnemy3);
+
+			}
 			modelMatrixColliderEnemy3 = glm::translate(modelMatrixColliderEnemy3, glm::vec3(modelEnemy.getSbb().c.x, modelEnemy.getSbb().c.y, modelEnemy.getSbb().c.z - EnemySteep));
 			enemyCollider3.c = glm::vec3(modelMatrixColliderEnemy3[3]);
 			enemyCollider3.ratio = modelEnemy.getSbb().ratio * 0.5;
-			std::get<0>(collidersSBB.find("enem-y" + std::to_string(i))->second) = enemyCollider3;
+			if (i <= 9) {
+				std::get<0>(collidersSBB.find("enem-y0" + std::to_string(i))->second) = enemyCollider3;
+			}
+			else {
+				std::get<0>(collidersSBB.find("enem-y" + std::to_string(i))->second) = enemyCollider3;
+
+			}
+
 		}
 		for (int i = 0; i < enemyPosition4.size(); i++) {
 			AbstractModel::SBB enemyCollider4;
 			glm::mat4 modelMatrixColliderEnemy4 = glm::mat4(1.0);
 			modelMatrixColliderEnemy4 = glm::translate(modelMatrixColliderEnemy4, enemyPosition4[i]);
-			addOrUpdateColliders(collidersSBB, "enem-x" + std::to_string(i), enemyCollider4, modelMatrixColliderEnemy4);
+			if (i <= 9) {
+				addOrUpdateColliders(collidersSBB, "enem-x0" + std::to_string(i), enemyCollider4, modelMatrixColliderEnemy4);
+			}
+			else {
+				addOrUpdateColliders(collidersSBB, "enem-x" + std::to_string(i), enemyCollider4, modelMatrixColliderEnemy4);
+
+			}
+
 			modelMatrixColliderEnemy4 = glm::translate(modelMatrixColliderEnemy4, glm::vec3(modelEnemy.getSbb().c.x - EnemySteep, modelEnemy.getSbb().c.y, modelEnemy.getSbb().c.z));
 			enemyCollider4.c = glm::vec3(modelMatrixColliderEnemy4[3]);
 			enemyCollider4.ratio = modelEnemy.getSbb().ratio * 0.5;
-			std::get<0>(collidersSBB.find("enem-x" + std::to_string(i))->second) = enemyCollider4;
+			if (i <= 9) {
+				std::get<0>(collidersSBB.find("enem-x0" + std::to_string(i))->second) = enemyCollider4;
+			}
+			else {
+				std::get<0>(collidersSBB.find("enem-x" + std::to_string(i))->second) = enemyCollider4;
+			}
+
 		}
 
 
@@ -1928,7 +2045,13 @@ void applicationLoop() {
 			glm::mat4 modelMatrixColliderArbol = glm::mat4(1.0);
 			modelMatrixColliderArbol = glm::translate(modelMatrixColliderArbol,arbolPosition[i]);
 			//modelMatrixColliderArbol = glm::rotate(modelMatrixColliderArbol, glm::radians(lamp1Orientation[i]), glm::vec3(0, 1, 0));
-			addOrUpdateColliders(collidersOBB, "arbol" + std::to_string(i), arbolCollider, modelMatrixColliderArbol);
+			if (i <= 9) {
+				addOrUpdateColliders(collidersOBB, "arbol0" + std::to_string(i), arbolCollider, modelMatrixColliderArbol);
+			}
+			else {
+				addOrUpdateColliders(collidersOBB, "arbol" + std::to_string(i), arbolCollider, modelMatrixColliderArbol);
+
+			}
 			// Set the orientation of collider before doing the scale
 			arbolCollider.u = glm::quat_cast(modelMatrixColliderArbol);
 			//modelMatrixColliderArbol = glm::scale(modelMatrixColliderArbol, glm::vec3(0.2, 1, 0.2));
@@ -1940,7 +2063,13 @@ void applicationLoop() {
 				;
 			arbolCollider.c = glm::vec3(modelMatrixColliderArbol[3]);
 			arbolCollider.e = modelArbol.getObb().e * glm::vec3(0.2, 1, 0.2);
-			std::get<0>(collidersOBB.find("arbol" + std::to_string(i))->second) = arbolCollider;
+			if (i <= 9) {
+				std::get<0>(collidersOBB.find("arbol0" + std::to_string(i))->second) = arbolCollider;
+			}else {
+				std::get<0>(collidersOBB.find("arbol" + std::to_string(i))->second) = arbolCollider;
+
+			}
+
 		}
 
 		// trineo collider
@@ -1967,7 +2096,14 @@ void applicationLoop() {
 			AbstractModel::OBB snowmanCollider;
 			glm::mat4 modelMatrixColliderSnowman = glm::mat4(1.0);
 			modelMatrixColliderSnowman = glm::translate(modelMatrixColliderSnowman, snowmanPosition[i]);
-			addOrUpdateColliders(collidersOBB, "snowman" + std::to_string(i), snowmanCollider, modelMatrixColliderSnowman);
+			if (i <= 9) {
+				addOrUpdateColliders(collidersOBB, "snowman0" + std::to_string(i), snowmanCollider, modelMatrixColliderSnowman);
+			}
+			else {
+				addOrUpdateColliders(collidersOBB, "snowman" + std::to_string(i), snowmanCollider, modelMatrixColliderSnowman);
+
+			}
+
 			// Set the orientation of collider before doing the scale
 			snowmanCollider.u = glm::quat_cast(modelMatrixColliderSnowman);
 			//modelMatrixColliderSnowman = glm::scale(modelMatrixColliderSnowman, glm::vec3(0.2, 1, 0.2));
@@ -1979,7 +2115,12 @@ void applicationLoop() {
 			;
 			snowmanCollider.c = glm::vec3(modelMatrixColliderSnowman[3]);
 			snowmanCollider.e = modelSnowman.getObb().e * glm::vec3(.5,1,1);
-			std::get<0>(collidersOBB.find("snowman" + std::to_string(i))->second) = snowmanCollider;
+			if (i <= 9) {
+				std::get<0>(collidersOBB.find("snowman0" + std::to_string(i))->second) = snowmanCollider;
+			}
+			else {
+				std::get<0>(collidersOBB.find("snowman" + std::to_string(i))->second) = snowmanCollider;
+			}
 		}
 
 		// Collider de Mario
@@ -2093,7 +2234,7 @@ void applicationLoop() {
 					if (it->first.find("enemy") != std::string::npos) {
 
 
-						std::string pos = it->first.substr(5, 1);
+						std::string pos = it->first.substr(5, 2);
 						//std::cout << "The enemy" << pos << std::endl;
 						enemyRender[std::stoi(pos)] = false;
 						contador_damage--;
@@ -2108,7 +2249,7 @@ void applicationLoop() {
 					if (it->first.find("enemx") != std::string::npos) {
 
 
-						std::string pos = it->first.substr(5, 1);
+						std::string pos = it->first.substr(5, 2);
 						//std::cout << "The enemy" << pos << std::endl;
 						enemyRender2[std::stoi(pos)] = false;
 						contador_damage--;
@@ -2122,7 +2263,7 @@ void applicationLoop() {
 					if (it->first.find("enem-y") != std::string::npos) {
 
 
-						std::string pos = it->first.substr(6, 1);
+						std::string pos = it->first.substr(6, 2);
 						//std::cout << "The enemy" << pos << std::endl;
 						enemyRender3[std::stoi(pos)] = false;
 						contador_damage--;
@@ -2136,7 +2277,7 @@ void applicationLoop() {
 
 					if (it->first.find("enem-x") != std::string::npos) {
 
-						std::string pos = it->first.substr(6, 1);
+						std::string pos = it->first.substr(6, 2);
 						
 						enemyRender4[std::stoi(pos)] = false;
 						contador_damage--;
@@ -2176,13 +2317,13 @@ void applicationLoop() {
 						
 					//std::cout << "000000000000000000000000000" << std::endl;
 					if (jt->first.find("moneda") != std::string::npos) {
-						std::string pos = jt->first.substr(6, 1);
+						std::string pos = jt->first.substr(6, 2);
 						std::cout << "Posicion" << pos << std::endl;
 						int a = std::stoi(pos);
 						monedasRender[std::stoi(pos)] = false;	
 						contador_txt++;
 						sourcesPlay[2] = true;
-						dificultad += 0.02;
+						dificultad += 0.015;
 
 					}
 
@@ -2270,7 +2411,7 @@ void applicationLoop() {
 				vivo = false; //Bloquea controles
 				resetGame();
 			}
-			if (contador_txt >= 9) {
+			if (contador_txt >= maxmonedas) {
 				muestraFinal = true;
 				resultadoPartida = true;
 				vivo = false; //Bloquea controles

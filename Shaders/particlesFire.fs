@@ -9,6 +9,7 @@ layout ( location = 0 ) out vec4 FragColor;
 
 uniform vec3 colorHumo;
 
+
 void main()
 {
     FragColor = texture(ParticleTex, TexCoord);
