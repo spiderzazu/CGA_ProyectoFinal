@@ -1430,6 +1430,7 @@ bool processInput(bool continueApplication) {
 	if (exitApp || glfwWindowShouldClose(window) != 0) {
 		return false;
 	}
+	bool keyEnterStatus;
 	//Activar tipo de control
 	if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
 		tipoControl = 0;
@@ -1440,6 +1441,13 @@ bool processInput(bool continueApplication) {
 		onSalida = false;
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 		onSalida = true;
+	if (!vivo && glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
+		keyEnterStatus = true;
+	else
+		keyEnterStatus = false;
+	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_RELEASE)
+		//std::cout << "Released" << std::endl;
+
 	if (vivo) {
 		if (glfwJoystickPresent(GLFW_JOYSTICK_1) == GL_TRUE) {
 			//std::cout << "Esta presente el joystick" << std::endl;
@@ -1583,7 +1591,7 @@ bool processInput(bool continueApplication) {
 			animationIndex = 0;
 		}
 	}   else {
-			bool keyEnterStatus = glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS;
+			
 			 //Activar bool que muestre texto
 			 if (principal) {
 				 if (!onSalida && tipoControl == 0) //Start and PS
