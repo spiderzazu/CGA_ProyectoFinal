@@ -2551,8 +2551,8 @@ void applicationLoop() {
 
 		//coordenadas
 
-		std::cout << "x" << modelMatrixMario[3].x << std::endl;
-		std::cout << "z" << modelMatrixMario[3].z << std::endl;
+		//std::cout << "x" << modelMatrixMario[3].x << std::endl;
+		//std::cout << "z" << modelMatrixMario[3].z << std::endl;
 			
 		
 
