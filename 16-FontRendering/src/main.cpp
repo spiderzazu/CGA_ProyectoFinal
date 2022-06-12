@@ -2538,7 +2538,7 @@ void applicationLoop() {
 						monedasRender[std::stoi(pos)] = false;	
 						contador_txt++;
 						sourcesPlay[2] = true;
-						dificultad += 0.015;
+						dificultad += 0.01;
 
 					}
 
