@@ -98,7 +98,7 @@ ShadowBox *shadowBox;
 //Game Variables
 bool vivo = false, muestraFinal = false, principal = true, resultadoPartida = false, onSalida = false;
 float dificultad = 0.1;
-int maxmonedas = 9;
+int maxmonedas = 15;
 
 //Control type
 int tipoControl = 0;
