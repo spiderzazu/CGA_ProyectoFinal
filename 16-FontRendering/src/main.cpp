@@ -98,7 +98,7 @@ ShadowBox *shadowBox;
 //Game Variables
 bool vivo = false, muestraFinal = false, principal = true, resultadoPartida = false, onSalida = false;
 float dificultad = 0.1;
-int maxmonedas = 11;
+int maxmonedas = 9;
 
 //Control type
 int tipoControl = 0;
@@ -217,8 +217,8 @@ std::vector<float> estrellaOrientation = { 21.37 + 90, -65.0 + 90 };
 std::vector<glm::vec3> monedaPosition = {
 
 	glm::vec3(80,0,19),
-	glm::vec3(20, 0, -54.10),
-	glm::vec3(-53.9, 0, -35.20),
+	glm::vec3(20,0,-54.1),
+	glm::vec3(-53.9,0,-35.2),
 	glm::vec3(-38.4,0,32.9),
 	glm::vec3(-118.6,0,-101.8),
 	glm::vec3(3.6,0,-99.9),
@@ -226,19 +226,21 @@ std::vector<glm::vec3> monedaPosition = {
 	glm::vec3(39,0,22),
 	glm::vec3(-0.32,0,-46.16),
 	glm::vec3(88,0,-141),
+
 	glm::vec3(-96.1,0,70.3),
 	glm::vec3(-91.1,0,-57.4),
-	glm::vec3(5.0, 0.0, -40.0),
-	glm::vec3(0,0,2),
-	glm::vec3(0,0,3),
-	glm::vec3(0,0,4),
-	glm::vec3(0,0,5),
-	glm::vec3(0,0,6),
-	glm::vec3(0,0,7),
+	glm::vec3(5,0,-40),
+	glm::vec3(42.8,0,-81.64),
+
+
+	glm::vec3(-61.27,0,-91.92),
+	glm::vec3(18.6,0,88.5),
+
+	glm::vec3(0,0,0),
+	glm::vec3(61.48,0,10.96),
+	glm::vec3(-14.79,0,-143.63),
 
 };
-//bool monedasRender[19] = {false,false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
-
 
 //monedas render
 bool monedasRender[19] = { true,true,true,true, true, true,true,true, true,true,true,true,true, true, true,true,true, true,true };
@@ -253,20 +255,15 @@ std::vector<glm::vec3> enemyPosition = {
 	glm::vec3(3.6,0,-99.4),
 	glm::vec3(-129,0,-28.5),
 	glm::vec3(39,0,22.5),
-	//glm::vec3(0,0,0.5)
 	glm::vec3(-0.32,0,-45.66),
 	glm::vec3(88,0,-140.5),
+
 	glm::vec3(-96.1,0,70.8),
 	glm::vec3(-91.1,0,-56.9),
+	glm::vec3(42.8,0,-81.14),
 
-	glm::vec3(28,0,85),
-	glm::vec3(-58,0,-90.43),
-
-	glm::vec3(34,0,-14),
-	glm::vec3(36,0,-16),
-	glm::vec3(38,0,-18),
-	glm::vec3(40,0,-20),
-	glm::vec3(42,0,-22)
+	glm::vec3(-61.27,0,-91.42),
+	glm::vec3(18.6,0,89),
 
 };
 std::vector<glm::vec3> enemyPosition2 = { 
@@ -278,16 +275,15 @@ std::vector<glm::vec3> enemyPosition2 = {
 	glm::vec3(4.1,0,-99.9),
 	glm::vec3(-128.5,0,-29),
 	glm::vec3(39.5,0,22),
-	//glm::vec3(0.5,0,0),
 	glm::vec3(0.18,0,-46.16),
 	glm::vec3(88.5,0,-141),
+
+
 	glm::vec3(-95.6,0,70.3),
 	glm::vec3(-90.6,0,-57.4),
-
-
-	glm::vec3(28,0,85.5),
-	glm::vec3(-58,0,-89.93),
-
+	glm::vec3(43.3,0,-81.64),
+	glm::vec3(-60.77,0,-91.92),
+	glm::vec3(19.1,0,88.5),
 
 
 
@@ -302,17 +298,15 @@ std::vector<glm::vec3> enemyPosition3 = {
 	glm::vec3(3.6,0,-100.4),
 	glm::vec3(-129,0,-29.5),
 	glm::vec3(39,0,21.5),
-	//glm::vec3(0,0,-0.5)
 	glm::vec3(-0.32,0,-46.66),
 	glm::vec3(88,0,-141.5),
+
+
 	glm::vec3(-96.1,0,69.8),
 	glm::vec3(-91.1,0,-57.9),
-
-
-	glm::vec3(28.5,0,85),
-	glm::vec3(-57.5,0,-90.43),
-
-
+	glm::vec3(42.8,0,-82.14),
+	glm::vec3(-61.27,0,-92.42),
+	glm::vec3(18.6,0,88),
 
 
 };
@@ -326,15 +320,14 @@ std::vector<glm::vec3> enemyPosition4 = {
 	glm::vec3(3.1,0,-99.9),
 	glm::vec3(-129.5,0,-29),
 	glm::vec3(38.5,0,22),
-	//glm::vec3(-0.5,0,0)
 	glm::vec3(-0.82,0,-46.16),
 	glm::vec3(87.5,0,-141),
+
 	glm::vec3(-96.6,0,70.3),
 	glm::vec3(-91.6,0,-57.4),
-
-	glm::vec3(28,0,84.5),
-	glm::vec3(-58,0,-90.93),
-
+	glm::vec3(42.3,0,-81.64),
+	glm::vec3(-61.77,0,-91.92),
+	glm::vec3(18.1,0,88.5),
 
 
 
@@ -342,11 +335,8 @@ std::vector<glm::vec3> enemyPosition4 = {
 
 
 // Enemy renders
-//bool enemyRender[9] = { true, true, true,true, true, true,true, true, true};
-//bool enemyRender2[9] = { true, true, true,true, true, true,true, true, true};
-//bool enemyRender3[9] = { true, true, true,true, true, true,true, true, true };
-//bool enemyRender4[9] = { true, true, true,true, true, true,true, true, true};
-bool enemyRender[19] = { true,true,true,true, true, true,true,true, true,true,true,true,true, true, true,true,true, true,true };
+
+bool enemyRender[15] = { true, true, true,true, true, true,true, true, true, true,true, true, true,true, true };
 bool enemyRender2[15] = { true, true, true,true, true, true,true, true, true, true,true, true, true,true, true };
 bool enemyRender3[15] = { true, true, true,true, true, true,true, true, true, true,true, true, true,true, true };
 bool enemyRender4[15] = { true, true, true,true, true, true,true, true, true, true,true, true, true,true, true };
@@ -383,8 +373,8 @@ std::vector<glm::vec3> arbolPosition = {
 
 std::vector<glm::vec3> snowmanPosition = {
 	glm::vec3(10, 0, -19),
-	glm::vec3(10,0,-30),
-	glm::vec3(10,0,-40),
+	glm::vec3(10,0,0.19),
+	glm::vec3(58.3,0,-13.27),
 	glm::vec3(-34,0,-13),
 	glm::vec3(-67,0,-75),
 	glm::vec3(108,0,-124),
@@ -1758,7 +1748,7 @@ void applicationLoop() {
 	modelMatrixFountain = glm::translate(modelMatrixFountain,
 			glm::vec3(5.0, 0.0, -40.0));
 	modelMatrixFountain[3][1] = terrain.getHeightTerrain(
-			modelMatrixFountain[3][0], modelMatrixFountain[3][2]) + 0.2;
+			modelMatrixFountain[3][0], modelMatrixFountain[3][2]);
 	modelMatrixFountain = glm::scale(modelMatrixFountain,
 			glm::vec3(10.0f, 10.0f, 10.0f));
 
@@ -2561,8 +2551,8 @@ void applicationLoop() {
 
 		//coordenadas
 
-		/*std::cout << "x" << modelMatrixMario[3].x << std::endl;
-		std::cout << "z" << modelMatrixMario[3].z << std::endl;*/
+		std::cout << "x" << modelMatrixMario[3].x << std::endl;
+		std::cout << "z" << modelMatrixMario[3].z << std::endl;
 			
 		
 
